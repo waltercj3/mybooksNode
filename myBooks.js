@@ -30,7 +30,19 @@ GPG.path = require('path');
 GPG.app.use(GPG.express.static(GPG.path.join(__dirname, '/public')));
 
 GPG.app.get('/', function (req, res) {
-    res.render('postGet');
+    res.render('myBooksHome');
+});
+
+GPG.app.get('/myBooksAuthors', function (req, res) {
+    res.render('myBooksAuthors');
+});
+
+GPG.app.get('/myBooksBooks', function (req, res) {
+    res.render('myBooksBooks');
+});
+
+GPG.app.get('/myBooksAddEdit', function (req, res) {
+    res.render('myBooksAddEdit');
 });
 
 GPG.app.get('/way-back', function (req, res) {

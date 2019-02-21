@@ -1,0 +1,23 @@
+<h1>POST Request Received:</h1>
+
+{{#if urlList}}
+  <h3>query data:</h3>
+  <ul>
+    {{#each urlList}}
+      <li>{{this.name}}: {{this.value}}
+    {{/each}}
+  </ul>
+{{else}}
+  <h3>query data: none</h3>
+{{/if}}
+
+{{#if bodyList}}
+  <h3>body data:</h3>
+  <ul>
+    {{#each bodyList}}
+      <li>{{this.name}}: {{this.value}}
+    {{/each}}
+  </ul>
+{{else}}
+  <h3>body data: none</h3>
+{{/if}}

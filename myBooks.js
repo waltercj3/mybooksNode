@@ -12,7 +12,8 @@ const MBG = {
     bodyParser: null,
     path: null,
     mysql: null,
-    con: null
+    con: null,
+    info: null
 };
 
 MBG.express = require('express');
@@ -30,14 +31,15 @@ MBG.app.set('port', 3000);
 
 MBG.path = require('path');
 MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
+MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
 
 MBG.mysql = require('mysql');
 
 MBG.con = MBG.mysql.createConnection({
-    host: "localhost",
-    user: "mybooks",
-    password: "88books!!",
-    database: "mybooks"
+    host: MBG.info.host,
+    user: MBG.info.user,
+    password: MBG.info.password,
+    database: MBG.info.database
 });
 
 

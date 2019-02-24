@@ -5,56 +5,87 @@
 // this file is based on the "forms-demo.js" file shown in lecture
 
 // one constant to rule them all
-const GPG = {
+const MBG = {
     express: null,
     app: null,
     handlebars: null,
     bodyParser: null,
-    path: null
+    path: null,
+    mysql: null,
+    con: null
 };
 
-GPG.express = require('express');
+MBG.express = require('express');
 
-GPG.app = GPG.express();
-GPG.handlebars = require('express-handlebars').create({defaultLayout: 'main'});
-GPG.bodyParser = require('body-parser');
+MBG.app = MBG.express();
+MBG.handlebars = require('express-handlebars').create({defaultLayout: 'main'});
+MBG.bodyParser = require('body-parser');
 
-GPG.app.use(GPG.bodyParser.urlencoded({extended: false}));
-GPG.app.use(GPG.bodyParser.json());
+MBG.app.use(MBG.bodyParser.urlencoded({extended: false}));
+MBG.app.use(MBG.bodyParser.json());
 
-GPG.app.engine('handlebars', GPG.handlebars.engine);
-GPG.app.set('view engine', 'handlebars');
-GPG.app.set('port', 3000);
+MBG.app.engine('handlebars', MBG.handlebars.engine);
+MBG.app.set('view engine', 'handlebars');
+MBG.app.set('port', 3000);
 
-GPG.path = require('path');
-GPG.app.use(GPG.express.static(GPG.path.join(__dirname, '/public')));
+MBG.path = require('path');
+MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
 
-GPG.app.get('/', function (req, res) {
+MBG.mysql = require('mysql');
+
+MBG.con = MBG.mysql.createConnection({
+    host: "localhost",
+    user: "mybooks",
+    password: "88books!!",
+    database: "mybooks"
+});
+
+
+MBG.app.get('/', function (req, res) {
     res.render('myBooksHome');
 });
 
-GPG.app.get('/myBooksAuthors', function (req, res) {
-    res.render('myBooksAuthors');
+MBG.app.get('/myBooksAuthors', function (req, res) {
+    var context = {}, query = "SELECT * FROM authors ORDER BY last_name";
+    MBG.con.query(query, function (err, result, fields) {
+        if (err) {
+            context.error = "Error: Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        context.authors = result;
+        context.length = result.length;
+        res.render('myBooksAuthors', context);
+    });
 });
 
-GPG.app.get('/myBooksBooks', function (req, res) {
-    res.render('myBooksBooks');
+MBG.app.get('/myBooksBooks', function (req, res) {
+    var context = {}, 
+        query = "select books.isbn, books.title, authors.last_name, authors.first_name from books, authors where books.author_id = authors.author_id order by title";
+    MBG.con.query(query, function (err, result, fields) {
+        if (err) {
+            context.error = "Error: Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        context.books = result;
+        context.length = result.length;
+        res.render('myBooksBooks', context);
+    });
 });
 
-GPG.app.get('/myBooksAddEdit', function (req, res) {
+MBG.app.get('/myBooksAddEdit', function (req, res) {
     res.render('myBooksAddEdit');
 });
 
-GPG.app.get('/way-back', function (req, res) {
+MBG.app.get('/way-back', function (req, res) {
     var pair, queryPairs = [], context = {};
     for (pair in req.query){
-        queryPairs.push({'name': pair, 'value': req.query[pair]})
+        queryPairs.push({'name': pair, 'value': req.query[pair]});
     }
     context.queryList = queryPairs;
     res.render('get-back', context);
 });
 
-GPG.app.post('/way-back', function (req, res) {
+MBG.app.post('/way-back', function (req, res) {
     var pair, queryPairs = [], context = {};
 
     for (pair in req.query) {
@@ -70,18 +101,18 @@ GPG.app.post('/way-back', function (req, res) {
     res.render('post-back', context);
 });
 
-GPG.app.use( function (req, res) {
+MBG.app.use( function (req, res) {
     res.status(404);
     res.render('404');
 });
 
-GPG.app.use(function(err, req, res, next){
+MBG.app.use(function(err, req, res, next){
     console.error(err.stack);
     res.type('plain/text');
     res.status(500);
     res.render('500');
 });
 
-GPG.app.listen(GPG.app.get('port'), function () {
-    console.log('Express started on http://localhost:' + GPG.app.get('port') + '; press Ctrl-C to terminate.');
+MBG.app.listen(MBG.app.get('port'), function () {
+    console.log('Express started on http://localhost:' + MBG.app.get('port') + '; press Ctrl-C to terminate.');
 });

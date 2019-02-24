@@ -1,10 +1,30 @@
-    <h1><a href="/">My Books</a></h1>
-    
-    <nav>
-      <ul>
+<h1><a href="/">My Books</a></h1>
+
+<nav>
+    <ul>
         <li class="current"><a href="#" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li><a href="myBooksAddEdit">Add</a>
         </li>
-      </ul>
-    </nav>
+    </ul>
+</nav>
+<div>
+    <p><strong>Authors:</strong> {{length}} currently listed.</p>
+    {{#if error}}
+        <h3>{{error}}</h3>
+    {{else}}
+        {{#if authors}}
+            <ul>
+                {{#each authors}}
+                    <li>
+                        <p class='author'>
+                            <a href="thisAuthor?authorid={{this.author_id}}">{{this.first_name}} {{this.last_name}}</a>
+                        </p>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <h3>something, somewhere, has gone just a little bit wrong</h3>
+        {{/if}}
+    {{/if}}
+</div>

@@ -49,7 +49,7 @@ MBG.app.get('/', function (req, res) {
 
 MBG.app.get('/myBooksAuthors', function (req, res) {
     var context = {}, query = "SELECT * FROM authors ORDER BY last_name";
-    MBG.con.query(query, function (err, result, fields) {
+    MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
@@ -62,8 +62,8 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
 
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {}, 
-        query = "select books.isbn, books.title, authors.last_name, authors.first_name from books, authors where books.author_id = authors.author_id order by title";
-    MBG.con.query(query, function (err, result, fields) {
+        query = "select books.isbn, books.title, books.author_id, authors.last_name, authors.first_name from books, authors where books.author_id = authors.author_id order by title";
+    MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
@@ -71,6 +71,59 @@ MBG.app.get('/myBooksBooks', function (req, res) {
         context.books = result;
         context.length = result.length;
         res.render('myBooksBooks', context);
+    });
+});
+
+MBG.app.get('/thisAuthor', function (req, res) {
+    var queryAuthor, queryBooks, context = {};
+
+    queryAuthor = "select last_name, first_name from authors where author_id = " + req.query.authorid;
+    queryBooks = "select isbn, title, orig_pub_date from books where author_id = " + req.query.authorid + " order by orig_pub_date";
+
+    MBG.con.query(queryAuthor, function (err, resultAuthor) {
+        if (err) {
+            context.error = "Error: Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        context.author = resultAuthor[0];
+        MBG.con.query(queryBooks, function (err, resultBooks) {
+            if (err) {
+                context.error = "Error: Could not connect to database.  Please try again later.";
+                throw err;
+            }
+            context.length = resultBooks.length;
+            if (context.length === 1) {
+                context.s = "";
+            } else {
+                context.s = "s";
+            }
+            context.books = resultBooks;
+            res.render('thisAuthor', context);
+        });
+    });
+});
+
+MBG.app.get('/thisBook', function (req, res) {
+    var queryAuthor, queryBook, context = {};
+
+    queryBook = "select * from books where isbn = " + req.query.isbn;
+    queryAuthor = "select last_name, first_name from authors where author_id = ";
+
+    MBG.con.query(queryBook, function (err, resultBook) {
+        if (err) {
+            context.error = "Error: Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        context.book = resultBook[0];
+        queryAuthor = queryAuthor + resultBook[0].author_id;
+        MBG.con.query(queryAuthor, function (err, resultAuthor) {
+            if (err) {
+                context.error = "Error: Could not connect to database.  Please try again later.";
+                throw err;
+            }
+            context.author = resultAuthor[0];
+            res.render('thisBook', context);
+        });
     });
 });
 
@@ -97,18 +150,18 @@ MBG.app.post('/way-back', function (req, res) {
 
     queryPairs = [];
     for (pair in req.body){
-        queryPairs.push({'name':pair,'value':req.body[pair]})
+        queryPairs.push({'name': pair, 'value': req.body[pair]})
     }
     context.bodyList = queryPairs;
     res.render('post-back', context);
 });
 
-MBG.app.use( function (req, res) {
+MBG.app.use(function (req, res) {
     res.status(404);
     res.render('404');
 });
 
-MBG.app.use(function(err, req, res, next){
+MBG.app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.type('plain/text');
     res.status(500);

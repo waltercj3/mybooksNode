@@ -1,0 +1,32 @@
+    <h1><a href="/">My Books</a></h1>
+    
+    <nav>
+      <ul>
+        <li><a href="myBooksAuthors" >Authors</a>
+        </li><li><a href="myBooksBooks">Books</a>
+        </li><li><a href="myBooksAddEdit">Add</a>
+        </li>
+      </ul>
+    </nav>
+    <div>
+        {{#if error}}
+            <h3>{{error}}</h3>
+        {{else}}
+            {{#if book}}
+                <h3>{{book.title}}</h3>
+                {{#if author}}
+                        <p class='author'>By
+                            <a href="thisAuthor?authorid={{book.author_id}}">{{author.first_name}} {{author.last_name}}</a>
+                        </p>
+                {{/if}}
+                {{#if book.orig_pub_date}}
+                    <p>Originally published in {{book.orig_pub_date}}</p>
+                {{/if}}
+                {{#if book.curr_ed_date}}
+                    <p>My edition published in {{book.curr_ed_date}}</p>
+                {{/if}}
+            {{else}}
+                <h3>something, somewhere, has gone just a little bit wrong</h3>
+            {{/if}}
+        {{/if}}
+    </div>

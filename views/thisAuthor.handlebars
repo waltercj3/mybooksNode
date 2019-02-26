@@ -1,0 +1,35 @@
+    <h1><a href="/">My Books</a></h1>
+    
+    <nav>
+      <ul>
+        <li><a href="myBooksAuthors" >Authors</a>
+        </li><li><a href="myBooksBooks">Books</a>
+        </li><li><a href="myBooksAddEdit">Add</a>
+        </li>
+      </ul>
+    </nav>
+    <div>
+        {{#if error}}
+            <h3>{{error}}</h3>
+        {{else}}
+            {{#if author}}
+                <p>
+                    <strong>{{author.first_name}} {{author.last_name}}: </strong>
+                    {{length}} book{{s}} currently listed.
+                </p>
+            {{else}}
+                <h3>something, somewhere, has gone just a little bit wrong</h3>
+            {{/if}}
+            {{#if books}}
+                <ul>
+                    {{#each books}}
+                        <li>
+                            <p class='book'>
+                                <a href="thisBook?isbn={{this.isbn}}">{{this.title}}</a>
+                            </p>
+                        </li>
+                    {{/each}}
+                </ul>
+            {{/if}}
+        {{/if}}
+    </div>

@@ -12,7 +12,7 @@ body {
     margin: auto;
     border: solid 3px;
     padding: 15px;
-    min-height: 666px;
+    min-height: 700px;
 }
 
 h1 {
@@ -102,4 +102,9 @@ nav li a:hover {
 
 #homeP {
     text-align: center;
+}
+
+#criteria {
+    float: right;
+    width: 119px;
 }

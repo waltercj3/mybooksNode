@@ -5,12 +5,23 @@
         <li><a href="myBooksAuthors" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li><a href="myBooksAddEdit">Add</a>
+        </li><li id='criteria' class="current"><a href="myBooksLinks">CRITERIA</a>
         </li>
     </ul>
 </nav>
 
-<p id="homeP">List the books you've read.<br />When you're at a bookseller, check here to make sure you haven't already read it.</p>
-<div>
-    <img src="/images/TheCentauriDevice_scaled.jpg" alt="Cover of Harrison's The Centauri Device" width="400">
+<p id="homeP">List the books you've read.<br />When you're at a bookseller, check here to make sure you haven't read it already.</p>
+<div id="picFrame">
+    {{#if error}}
+        <h3>{{error}}</h3>
+    {{else}}
+        {{#if items}}
+            {{#each items}}
+                <img class="pics" src="/images/{{this.image}}" alt="{{this.image}}" width="400">
+            {{/each}}
+        {{else}}
+            <h3>something, somewhere, has gone just a little bit wrong</h3>
+        {{/if}}
+    {{/if}}
 </div>
 <script type="text/javascript" src="/scripts/myBooksHome.js"></script>

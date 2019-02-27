@@ -13,7 +13,9 @@ const MBG = {
     path: null,
     mysql: null,
     con: null,
-    info: null
+    info: null,
+    fs: null,
+    shuffleArray: null
 };
 
 MBG.express = require('express');
@@ -42,9 +44,35 @@ MBG.con = MBG.mysql.createConnection({
     database: MBG.info.database
 });
 
+MBG.fs = require('fs');
+
+MBG.shuffleArray = function (array) {
+    var i, j, temp;
+    for (i = array.length - 1; i > 0; i -= 1) {
+        j = Math.floor(Math.random() * (i + 1));
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
 
 MBG.app.get('/', function (req, res) {
-    res.render('myBooksHome');
+    var i, imagesFolder, context = {}; 
+    context.items = [];
+    imagesFolder = './public/images/';
+    MBG.fs.readdir(imagesFolder, function (err, images) {
+        if (err) {
+            context.error = "Error: could not find image files";
+            throw err;
+        }
+        MBG.shuffleArray(images);
+        for (i = 0; i < images.length; i += 1) {
+            if (MBG.path.extname(images[i].toLowerCase()) === '.jpg') {
+                context.items.push({"image": images[i]});
+            }
+        }
+    });
+    res.render('myBooksHome', context);
 });
 
 MBG.app.get('/myBooksAuthors', function (req, res) {
@@ -130,6 +158,11 @@ MBG.app.get('/thisBook', function (req, res) {
 MBG.app.get('/myBooksAddEdit', function (req, res) {
     res.render('myBooksAddEdit');
 });
+
+MBG.app.get('/myBooksLinks', function (req, res) {
+    res.render('myBooksLinks');
+});
+
 
 MBG.app.get('/way-back', function (req, res) {
     var pair, queryPairs = [], context = {};

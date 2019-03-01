@@ -3,8 +3,8 @@
 **/credentials.js
 **/demo_db_connections.js
 **/info.js
-**/images/**
-**/JohnsonW_Resume.pdf
+#**/images/**
+#**/JohnsonW_Resume.pdf
 
 # exception
 !/images/.gitkeep

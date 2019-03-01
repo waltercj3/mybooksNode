@@ -1,70 +1,73 @@
-    <h1><a href="/">My Books</a></h1>
-    
-    <nav>
-      <ul>
+<h1><a href="/">My Books</a></h1>
+
+<nav>
+    <ul>
         <li><a href="myBooksAuthors" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li class="current"><a href="#">Add</a>
-        </li><li id='criteria' class="current"><a href="myBooksLinks">CRITERIA</a>
+        </li><li id='criteria'><a href="myBooksLinks">CRITERIA</a>
         </li>
-      </ul>
-    </nav>
-    <div>
-      <div id="bookMessage">
-        <!--<p>Enter a 10 or 13 digit ISBN and fetch title and author.</p>-->
+    </ul>
+</nav>
+<div>
+    <div id="bookMessage">
         <p>Enter a 10 or 13 digit ISBN and check to see if this book is already listed.</p>
-      </div>
-      <form action="insert_book.php" method="post">
-        <table border="0">
-          <tr>
-            <td>ISBN</td>
-              <td><table><tr>
-               <td class="isbncheck"><input type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput"></td>
-               <td class="isbncheck"><input type="button" name="fetch" value="check" id="fetchButton"></td>
-              </tr></table></td>
-          </tr>
-          <tr>
-            <td>Title</td>
-            <td> <input type="text" name="title" maxlength="60" size="30" id="titleInput"></td>
-          </tr>
-          <tr>
-            <td>Author Last Name</td>
-            <td> <input type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput"></td>
-          </tr>
-          <tr>
-            <td>Author First Name</td>
-            <td> <input type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput"></td>
-          </tr>
-          <tr>
-            <td>Classification</td>
-            <td>
-              <select name="class" id="classInput">
-                <option value = "1">Science Fiction</option>
-                <option value = "2">Fantasy</option>
-                <option value = "3">Fiction</option>
-                <option value = "4">Non-Fiction</option>
-                <option value = "5">Textbook</option>
-                <option value = "0" selected></option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Rating</td>
-            <td><input type="number" name="rating" min="0" max="4" value="null" id="ratingInput"></td>
-          </tr>
-          <tr>
-            <td>Year of First Publication</td>
-            <td><input type="number" name="orig_pub_date" min="1888" max="2088" value="null" id="pubInput"></td>
-          </tr>
-          <tr>
-            <td>Year of My Edition</td>
-            <td><input type="number" name="curr_ed_date" min="1888" max="2088" value="null" id="myEdInput"></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td><input type="submit" value="Add/Edit Book"></td>
-          </tr>
-        </table>
-      </form>
     </div>
-    <script type="text/javascript" src="scripts/addEdit.js"></script>
+    <form id="bookForm">
+        <table border="0">
+            <tr>
+                <td>ISBN:</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="isbncheck"><input type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput"></td>
+                            <td class="isbncheck"><input type="button" name="fetch" value="check" id="fetchButton"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Title:</td>
+                <td> <input type="text" name="title" maxlength="60" size="45" id="titleInput"></td>
+            </tr>
+            <tr>
+                <td>Author Last Name:</td>
+                <td> <input type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput"></td>
+            </tr>
+            <tr>
+                <td>Author First Name:</td>
+                <td> <input type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput"></td>
+            </tr>
+            <tr>
+                <td>Classification:</td>
+                <td>
+                    <select name="class" id="classInput">
+                        <option value = "1">Science Fiction</option>
+                        <option value = "2">Fantasy</option>
+                        <option value = "3">Fiction</option>
+                        <option value = "4">Non-Fiction</option>
+                        <option value = "5">Textbook</option>
+                        <option value = "0" selected></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Rating:</td>
+                <td><input type="number" name="rating" min="0" max="4" id="ratingInput"></td>
+            </tr>
+            <tr>
+                <td>Year of First Publication:</td>
+                <td><input type="number" name="orig_pub_date" min="1888" max="2088" id="pubInput"></td>
+            </tr>
+            <tr>
+                <td>Year of My Edition:</td>
+                <td><input type="number" name="curr_ed_date" min="1888" max="2088" id="myEdInput"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Add/Edit Book" id="addEditButton"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<script type="text/javascript" src="scripts/addEdit.js"></script>

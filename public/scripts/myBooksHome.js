@@ -2,7 +2,7 @@
 
 // The animation code here was inspired by the code found here: https://www.the-art-of-web.com/css/fading-slideshow-no-jquery/
 
-'use strict';
+"use strict";
 
 const MBHG = {
     doc: document,

@@ -2,7 +2,8 @@
 
 // Walter Johnson
 // CS290, Winter 2019, final project
-// this file is based on the "forms-demo.js" file shown in lecture
+
+"use strict";
 
 // one constant to rule them all
 const MBG = {
@@ -163,42 +164,62 @@ MBG.app.get('/myBooksLinks', function (req, res) {
     res.render('myBooksLinks');
 });
 
+MBG.app.get('/isbnResults', function (req, res) {
+    var queryAuthor, queryBook, response = {};
 
-MBG.app.get('/way-back', function (req, res) {
-    var pair, queryPairs = [], context = {};
-    for (pair in req.query){
-        queryPairs.push({'name': pair, 'value': req.query[pair]});
-    }
-    context.queryList = queryPairs;
-    res.render('get-back', context);
+    queryBook = "select * from books where isbn = " + req.query.isbn;
+    queryAuthor = "select last_name, first_name from authors where author_id = ";
+
+    MBG.con.query(queryBook, function (err, resultBook) {
+        if (err) {
+            response.error = "Could not connect to database.  Please try again later.";
+            res.type('plain/text');
+            res.status(500);
+            res.send('500 - Server Error');
+            throw err;
+        }
+        if (resultBook[0]) {
+            response.book = resultBook[0];
+            queryAuthor = queryAuthor + resultBook[0].author_id;
+            MBG.con.query(queryAuthor, function (err, resultAuthor) {
+                if (err) {
+                    response.error = "Could not connect to database.  Please try again later.";
+                    res.type('plain/text');
+                    res.status(500);
+                    res.send('500 - Server Error');
+                    throw err;
+                }
+                response.author = resultAuthor[0];
+                res.type('application/json');
+                res.status(200);
+                res.send(response);
+            });
+        } else {
+            response.book = "Book not listed.";
+            res.type('application/json');
+            res.status(200);
+            res.send(response);
+        }
+    });
 });
 
-MBG.app.post('/way-back', function (req, res) {
-    var pair, queryPairs = [], context = {};
-
-    for (pair in req.query) {
-        queryPairs.push({'name': pair, 'value': req.query[pair]})
-    }
-    context.urlList = queryPairs;
-
-    queryPairs = [];
-    for (pair in req.body){
-        queryPairs.push({'name': pair, 'value': req.body[pair]})
-    }
-    context.bodyList = queryPairs;
-    res.render('post-back', context);
+MBG.app.post('/addEditBook', function (req, res) {
+    var response = "The server has received this data, but the database has not been updated as that functionality does not exist yet.";
+    res.type('plain/text');
+    res.status(200);
+    res.send(response);
 });
 
 MBG.app.use(function (req, res) {
     res.status(404);
-    res.render('404');
+    res.render('404 - Not Found');
 });
 
 MBG.app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.type('plain/text');
     res.status(500);
-    res.render('500');
+    res.render('500 - Internal Server Error');
 });
 
 MBG.app.listen(MBG.app.get('port'), function () {

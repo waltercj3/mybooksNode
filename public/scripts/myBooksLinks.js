@@ -1,6 +1,6 @@
 // myBooksLinks.js
 
-'use strict';
+"use strict";
 
 const MBLG = {
     doc: document,

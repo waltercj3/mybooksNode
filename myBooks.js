@@ -214,14 +214,14 @@ MBG.app.post('/addEditBook', function (req, res) {
 
 MBG.app.use(function (req, res) {
     res.status(404);
-    res.render('404 - Not Found');
+    res.render('404');
 });
 
 MBG.app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.type('plain/text');
     res.status(500);
-    res.render('500 - Internal Server Error');
+    res.render('500');
 });
 
 MBG.app.listen(MBG.app.get('port'), function () {

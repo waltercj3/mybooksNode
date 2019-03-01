@@ -30,11 +30,13 @@ MBG.app.use(MBG.bodyParser.json());
 
 MBG.app.engine('handlebars', MBG.handlebars.engine);
 MBG.app.set('view engine', 'handlebars');
-MBG.app.set('port', 3000);
 
 MBG.path = require('path');
-MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
 MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
+
+MBG.app.set('port', MBG.info.port);
+
+MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
 
 MBG.mysql = require('mysql');
 

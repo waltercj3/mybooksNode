@@ -6,9 +6,9 @@
 
 const MBHG = {
     doc: document,
-    style: {},
-    makeStyle: null,
-    sheet: null
+    style: {},          // style object for CSS specific to home page
+    makeStyle: null,    // function to make style object into stylesheet, add to page
+    sheet: null         // stylesheet to which rules are added
 };
 
 MBHG.style = {
@@ -24,7 +24,7 @@ MBHG.style = {
     },
     '#picFrame img:nth-of-type(1)': {
         'animation-name': 'remover',
-        'animation-delay': '3s',
+        'animation-delay': '3s',        // 3 seconds for each image
         'animation-duration': '1s',
         'z-index': '14'
     },
@@ -48,6 +48,7 @@ MBHG.makeStyle = function (styleObject) {
     }
 };
 
+// adds new style sheet, keyframe not easily placed in style object
 MBHG.doc.addEventListener('DOMContentLoaded', function () {
     var index, rule = '@keyframes remover {from {opacity: 1.0;} to {opacity: 0.0;}}';
     MBHG.makeStyle(MBHG.style);
@@ -55,6 +56,7 @@ MBHG.doc.addEventListener('DOMContentLoaded', function () {
     MBHG.sheet.insertRule(rule, index);
 });
 
+// moves next image to the top of the pile
 MBHG.doc.addEventListener('DOMContentLoaded', function () {
     var i, arrLength, picFrame, imageArray = [], removeDone = null;
     picFrame = MBHG.doc.getElementById('picFrame');

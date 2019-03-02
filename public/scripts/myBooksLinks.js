@@ -4,8 +4,8 @@
 
 const MBLG = {
     doc: document,
-    style: {},
-    makeStyle: null
+    style: {},          // style object specific to criteria page
+    makeStyle: null     // function create style sheet and add it to page
 };
 
 MBLG.style = {

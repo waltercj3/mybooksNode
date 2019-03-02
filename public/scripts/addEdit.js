@@ -16,10 +16,10 @@ const MBAG = {
     pubInput: document.getElementById("pubInput"),
     myEdInput: document.getElementById("myEdInput"),
     addEditButton: document.getElementById("addEditButton"),
-    emptyFields: null,
-    bindFetchGet: null,
-    bindAddEditPost: null,
-    formData: {}
+    emptyFields: null,          // function to remove clear input fields on AddEdit page
+    bindFetchGet: null,         // functionality of "check" button
+    bindAddEditPost: null,      // functionality of "add/edit" button
+    formData: {}                // object of form data
 };
 
 MBAG.emptyFields = function () {
@@ -38,15 +38,15 @@ MBAG.bindFetchGet = function () {
         request = new XMLHttpRequest();
 
         isbn = MBAG.isbnInput.value;
-        isbn = isbn.trim().toUpperCase();
-        isbn = isbn.replace(/[^0-9,X]/g, "");
-        if (isbn.length < 10) {
+        isbn = isbn.trim().toUpperCase();// clean up isbn input
+        isbn = isbn.replace(/[^0-9,X]/g, "");// make isbn numbers only
+        if (isbn.length < 10) {// older isbn numbers can have less than 10 digits, but 10 needed for lookup
             while (isbn.length < 10) {
                 isbn = "0" + isbn;
             }
         }
         if (isbn.length !== 10 && isbn.length !== 13) {
-            MBAG.bookMessage.innerHTML = "<p>An ISBN should have 10 or 13 digits.  Please try again.</p>"
+            MBAG.bookMessage.innerHTML = "<p>An ISBN should have 10 or 13 digits.  Please try again.</p>";
             MBAG.emptyFields();
         } else {
             reqUrl = "isbnResults?isbn=" + isbn;
@@ -60,7 +60,7 @@ MBAG.bindFetchGet = function () {
                 if (response.book === "Book not listed.") {
                     MBAG.bookMessage.innerHTML = "<p>" + response.book + "</p>";
                     MBAG.emptyFields();
-                } else {
+                } else { // fill in form fields
                     MBAG.bookMessage.innerHTML = "<p>Results found.</p>";
                     MBAG.isbnInput.value = response.book.isbn;
                     MBAG.titleInput.value = response.book.title;
@@ -73,7 +73,8 @@ MBAG.bindFetchGet = function () {
                 }
             } else {
                 console.log("Error in network request: " + request.statusText);
-                MBAG.bookMessage.innerHTML = "<p>Error: " + request.error + "</p>";          }
+                MBAG.bookMessage.innerHTML = "<p>Error: " + request.error + "</p>";
+            }
         });
         event.preventDefault();
     });
@@ -86,8 +87,8 @@ MBAG.bindAddEditPost = function () {
         var request;
         event.preventDefault();
 
-        MBAG.formData.book = {};
-        MBAG.formData.author = {};
+        MBAG.formData.book = {}; // sub object for book data
+        MBAG.formData.author = {}; // sub object for author data
         MBAG.formData.book.isbn = MBAG.isbnInput.value;
         MBAG.formData.book.title = MBAG.titleInput.value;
         MBAG.formData.author.last_name = MBAG.lastNameInput.value;
@@ -109,7 +110,7 @@ MBAG.bindAddEditPost = function () {
                 MBAG.bookMessage.innerHTML = "Error in network request: " + request.statusText;
             }
         });
-        request.send(JSON.stringify(MBAG.formData));
+        request.send(JSON.stringify(MBAG.formData)); // does the object really need to be stringified?
     });
 };
 

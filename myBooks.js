@@ -13,10 +13,10 @@ const MBG = {
     bodyParser: null,
     path: null,
     mysql: null,
-    con: null,
-    info: null,
+    con: null,              // database connection
+    info: null,             // implementation specific values
     fs: null,
-    shuffleArray: null
+    shuffleArray: null      // function to change order of slideshow
 };
 
 MBG.express = require('express');
@@ -57,12 +57,13 @@ MBG.shuffleArray = function (array) {
         array[i] = array[j];
         array[j] = temp;
     }
-}
+};
 
+// home page
 MBG.app.get('/', function (req, res) {
-    var i, imagesFolder, context = {}; 
+    var i, imagesFolder, context = {};
     context.items = [];
-    imagesFolder = './public/images/';
+    imagesFolder = './public/images/';// images for slideshow
     MBG.fs.readdir(imagesFolder, function (err, images) {
         if (err) {
             context.error = "Error: could not find image files";
@@ -74,10 +75,11 @@ MBG.app.get('/', function (req, res) {
                 context.items.push({"image": images[i]});
             }
         }
+        res.render('myBooksHome', context);
     });
-    res.render('myBooksHome', context);
 });
 
+// list of authors
 MBG.app.get('/myBooksAuthors', function (req, res) {
     var context = {}, query = "SELECT * FROM authors ORDER BY last_name";
     MBG.con.query(query, function (err, result) {
@@ -91,6 +93,7 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
     });
 });
 
+// list of books
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {}, 
         query = "select books.isbn, books.title, books.author_id, authors.last_name, authors.first_name from books, authors where books.author_id = authors.author_id order by title";
@@ -105,19 +108,20 @@ MBG.app.get('/myBooksBooks', function (req, res) {
     });
 });
 
+// selected author and books by same listed
 MBG.app.get('/thisAuthor', function (req, res) {
     var queryAuthor, queryBooks, context = {};
 
-    queryAuthor = "select last_name, first_name from authors where author_id = " + req.query.authorid;
-    queryBooks = "select isbn, title, orig_pub_date from books where author_id = " + req.query.authorid + " order by orig_pub_date";
+    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
+    queryBooks = "select isbn, title, orig_pub_date from books where author_id = (?) order by orig_pub_date";
 
-    MBG.con.query(queryAuthor, function (err, resultAuthor) {
+    MBG.con.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
         }
         context.author = resultAuthor[0];
-        MBG.con.query(queryBooks, function (err, resultBooks) {
+        MBG.con.query(queryBooks, [req.query.authorid], function (err, resultBooks) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
                 throw err;
@@ -134,20 +138,20 @@ MBG.app.get('/thisAuthor', function (req, res) {
     });
 });
 
+// selected book
 MBG.app.get('/thisBook', function (req, res) {
     var queryAuthor, queryBook, context = {};
 
-    queryBook = "select * from books where isbn = " + req.query.isbn;
-    queryAuthor = "select last_name, first_name from authors where author_id = ";
+    queryBook = "select * from books where isbn = (?)";
+    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
 
-    MBG.con.query(queryBook, function (err, resultBook) {
+    MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
         }
         context.book = resultBook[0];
-        queryAuthor = queryAuthor + resultBook[0].author_id;
-        MBG.con.query(queryAuthor, function (err, resultAuthor) {
+        MBG.con.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
                 throw err;
@@ -158,21 +162,24 @@ MBG.app.get('/thisBook', function (req, res) {
     });
 });
 
+// form to add or edit book
 MBG.app.get('/myBooksAddEdit', function (req, res) {
     res.render('myBooksAddEdit');
 });
 
+// page of class required criteria
 MBG.app.get('/myBooksLinks', function (req, res) {
     res.render('myBooksLinks');
 });
 
+// looks up book by isbn, fills in form if book is listed
 MBG.app.get('/isbnResults', function (req, res) {
     var queryAuthor, queryBook, response = {};
 
-    queryBook = "select * from books where isbn = " + req.query.isbn;
-    queryAuthor = "select last_name, first_name from authors where author_id = ";
+    queryBook = "select * from books where isbn = (?)";
+    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
 
-    MBG.con.query(queryBook, function (err, resultBook) {
+    MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
             response.error = "Could not connect to database.  Please try again later.";
             res.type('plain/text');
@@ -182,8 +189,7 @@ MBG.app.get('/isbnResults', function (req, res) {
         }
         if (resultBook[0]) {
             response.book = resultBook[0];
-            queryAuthor = queryAuthor + resultBook[0].author_id;
-            MBG.con.query(queryAuthor, function (err, resultAuthor) {
+            MBG.con.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
                 if (err) {
                     response.error = "Could not connect to database.  Please try again later.";
                     res.type('plain/text');
@@ -205,8 +211,9 @@ MBG.app.get('/isbnResults', function (req, res) {
     });
 });
 
+// result of add/edit button on myBooksAddEdit page
 MBG.app.post('/addEditBook', function (req, res) {
-    var response = "The server has received this data, but the database has not been updated as that functionality does not exist yet.";
+    var response = "The server has received this data, but the database has not been updated as that functionality does not yet exist.";
     res.type('plain/text');
     res.status(200);
     res.send(response);

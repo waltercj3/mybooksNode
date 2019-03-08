@@ -25,7 +25,7 @@ MBLG.style = {
         'float': 'left',
         'width': '33.33%',
         'height': '588px',
-        'padding': '7px',
+        'padding': '7px'
     },
     '.clearfix::after': {
         'content': "",

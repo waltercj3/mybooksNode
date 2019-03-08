@@ -32,11 +32,13 @@ MBG.app.engine('handlebars', MBG.handlebars.engine);
 MBG.app.set('view engine', 'handlebars');
 
 MBG.path = require('path');
-MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
+//MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
+MBG.info = require("./info.js");
 
 MBG.app.set('port', MBG.info.port);
 
-MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
+//MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
+MBG.app.use(MBG.express.static('public'));
 
 MBG.mysql = require('mysql');
 

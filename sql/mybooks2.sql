@@ -27,6 +27,13 @@ CREATE TABLE Classification
     class_description text
 );
 
+DROP TABLE IF EXISTS `Book_Rating` ;
+FLUSH TABLES `Book_Rating`; 
+CREATE TABLE Book_Rating 
+(   book_rate_id tinyint unsigned not null auto_increment primary key,
+	book_rate_description varchar(255)
+);
+
 DROP TABLE IF EXISTS `Book_Reader` ;
 FLUSH TABLES `Book_Reader` ; 
 CREATE TABLE Book_Reader

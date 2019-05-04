@@ -37,10 +37,11 @@ CREATE TABLE Book_Rating
 DROP TABLE IF EXISTS `Book_Reader` ;
 FLUSH TABLES `Book_Reader` ; 
 CREATE TABLE Book_Reader
-(   reader_id int unsigned,
-	isbn varchar(255) not null primary key,
+(   reader_id int unsigned not null,
+	isbn varchar(255) not null,
     read_date date,
-    book_rate_id tinyint unsigned
+    book_rate_id tinyint unsigned,
+    PRIMARY KEY (reader_id, isbn)
 );
 
 DROP TABLE IF EXISTS `Reader` ;

@@ -51,7 +51,8 @@ CREATE TABLE Reader
 	reader_last_name varchar(50) not null,
     reader_first_name varchar(50),
     reader_email varchar(255) NOT NULL,
-    reader_password varchar(255) NOT NULL
+    reader_password varchar(255) NOT NULL,
+    UNIQUE KEY email_password (reader_email, reader_password)
 );
 
 -- CREATE INDEX book_title ON books (book_title);

@@ -11,10 +11,10 @@ const MBAG = {
     titleInput: document.getElementById("titleInput"),
     lastNameInput: document.getElementById("lastNameInput"),
     firstNameInput: document.getElementById("firstNameInput"),
+    midNameInput: document.getElementById("midNameInput"),
     classInput: document.getElementById("classInput"),
     ratingInput: document.getElementById("ratingInput"),
     pubInput: document.getElementById("pubInput"),
-    myEdInput: document.getElementById("myEdInput"),
     addEditButton: document.getElementById("addEditButton"),
     emptyFields: null,          // function to remove clear input fields on AddEdit page
     bindFetchGet: null,         // functionality of "check" button
@@ -63,13 +63,13 @@ MBAG.bindFetchGet = function () {
                 } else { // fill in form fields
                     MBAG.bookMessage.innerHTML = "<p>Results found.</p>";
                     MBAG.isbnInput.value = response.book.isbn;
-                    MBAG.titleInput.value = response.book.title;
-                    MBAG.lastNameInput.value = response.author.last_name;
-                    MBAG.firstNameInput.value = response.author.first_name;
+                    MBAG.titleInput.value = response.book.book_title;
+                    MBAG.lastNameInput.value = response.author.author_last_name;
+                    MBAG.firstNameInput.value = response.author.author_first_name;
+                    MBAG.midNameInput.value = response.author.author_mid_name;
                     MBAG.classInput.value = response.book.class_id;
                     MBAG.ratingInput.value = response.book.book_rate_id;
                     MBAG.pubInput.value = response.book.orig_pub_date;
-                    MBAG.myEdInput.value = response.book.curr_ed_date;
                 }
             } else {
                 console.log("Error in network request: " + request.statusText);
@@ -90,13 +90,13 @@ MBAG.bindAddEditPost = function () {
         MBAG.formData.book = {}; // sub object for book data
         MBAG.formData.author = {}; // sub object for author data
         MBAG.formData.book.isbn = MBAG.isbnInput.value;
-        MBAG.formData.book.title = MBAG.titleInput.value;
-        MBAG.formData.author.last_name = MBAG.lastNameInput.value;
-        MBAG.formData.author.first_name = MBAG.firstNameInput.value;
+        MBAG.formData.book.book_title = MBAG.titleInput.value;
+        MBAG.formData.author.author_last_name = MBAG.lastNameInput.value;
+        MBAG.formData.author.author_first_name = MBAG.firstNameInput.value;
+        MBAG.formData.author.author_mid_name = MBAG.midNameInput.value;
         MBAG.formData.book.class_id = MBAG.classInput.value;
         MBAG.formData.book.book_rate_id = MBAG.ratingInput.value;
         MBAG.formData.book.orig_pub_date = MBAG.pubInput.value;
-        MBAG.formData.book.curr_ed_date = MBAG.myEdInput.value;
 
         request = new XMLHttpRequest();
         request.open('POST', 'addEditBook', true);

@@ -5,13 +5,12 @@
         <li><a href="myBooksAuthors" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li class="current"><a href="#">Add</a>
-        </li><li id='criteria'><a href="myBooksLinks">CRITERIA</a>
         </li>
     </ul>
 </nav>
 <div>
     <div id="bookMessage">
-        <p>Enter a 10 or 13 digit ISBN and check to see if this book is already listed.</p>
+        <p>Enter a 10 or 13 digit ISBN to check if this book is already in our database.</p>
     </div>
     <form id="bookForm">
         <table border="0">
@@ -39,29 +38,50 @@
                 <td> <input type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput"></td>
             </tr>
             <tr>
+                <td>Author Middle Name:</td>
+                <td> <input type="text" name="authorMid" maxlength="30" size="30" id="midNameInput"></td>
+            </tr>
+            <tr>
                 <td>Classification:</td>
                 <td>
-                    <select name="class" id="classInput">
-                        <option value = "1">Science Fiction</option>
-                        <option value = "2">Fantasy</option>
-                        <option value = "3">Fiction</option>
-                        <option value = "4">Non-Fiction</option>
-                        <option value = "5">Textbook</option>
-                        <option value = "0" selected></option>
-                    </select>
+                    {{#if error}}
+                        {{error}}
+                    {{else}}
+                        {{#if classes}}
+                            <select name="class" id="classInput">
+                                {{#each classes}}
+                                    <option value="{{this.class_id}}">{{this.class_name}}</option>
+                                {{/each}}
+                                <option value='0' selected></option>
+                            </select>
+                        {{else}}
+                            something, somewhere, has gone just a little bit wrong
+                        {{/if}}
+                    {{/if}}
                 </td>
             </tr>
             <tr>
                 <td>Rating:</td>
-                <td><input type="number" name="rating" min="0" max="4" id="ratingInput"></td>
+                <td>
+                    {{#if error}}
+                        {{error}}
+                    {{else}}
+                        {{#if ratings}}
+                            <select name="rating" id="ratingInput">
+                                {{#each ratings}}
+                                    <option value="{{this.book_rate_id}}">{{this.book_rate_description}}</option>
+                                {{/each}}
+                                <option value='0' selected></option>
+                            </select>
+                        {{else}}
+                            something, somewhere, has gone just a little bit wrong
+                        {{/if}}
+                    {{/if}}
+                </td>
             </tr>
             <tr>
-                <td>Year of First Publication:</td>
+                <td>Year of Publication:</td>
                 <td><input type="number" name="orig_pub_date" min="1888" max="2088" id="pubInput"></td>
-            </tr>
-            <tr>
-                <td>Year of My Edition:</td>
-                <td><input type="number" name="curr_ed_date" min="1888" max="2088" id="myEdInput"></td>
             </tr>
             <tr>
                 <td></td>

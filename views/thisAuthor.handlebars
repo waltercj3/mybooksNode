@@ -5,7 +5,6 @@
         <li><a href="myBooksAuthors" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li><a href="myBooksAddEdit">Add</a>
-        </li><li id='criteria' class="current"><a href="myBooksLinks">CRITERIA</a>
         </li>
       </ul>
     </nav>
@@ -15,7 +14,7 @@
         {{else}}
             {{#if author}}
                 <p>
-                    <strong>{{author.first_name}} {{author.last_name}}: </strong>
+                    <strong>{{author.author_first_name}} {{author.author_mid_name}} {{author.author_last_name}}: </strong>
                     {{length}} book{{s}} currently listed.
                 </p>
             {{else}}
@@ -26,7 +25,7 @@
                     {{#each books}}
                         <li>
                             <p class='book'>
-                                <a href="thisBook?isbn={{this.isbn}}">{{this.title}}</a>
+                                <a href="thisBook?isbn={{this.isbn}}">{{this.book_title}}</a>
                             </p>
                         </li>
                     {{/each}}

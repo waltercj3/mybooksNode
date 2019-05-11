@@ -83,7 +83,7 @@ MBG.app.get('/', function (req, res) {
 
 // list of authors
 MBG.app.get('/myBooksAuthors', function (req, res) {
-    var context = {}, query = "SELECT * FROM authors ORDER BY last_name";
+    var context = {}, query = "SELECT * FROM author ORDER BY author_last_name";
     MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
@@ -98,7 +98,7 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
 // list of books
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {}, 
-        query = "select books.isbn, books.title, books.author_id, authors.last_name, authors.first_name from books, authors where books.author_id = authors.author_id order by title";
+        query = "SELECT book.isbn, book.book_title, book.author_id, author.author_last_name, author.author_first_name, author_mid_name FROM book, author WHERE book.author_id = author.author_id ORDER BY book.book_title";
     MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
@@ -114,8 +114,8 @@ MBG.app.get('/myBooksBooks', function (req, res) {
 MBG.app.get('/thisAuthor', function (req, res) {
     var queryAuthor, queryBooks, context = {};
 
-    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
-    queryBooks = "select isbn, title, orig_pub_date from books where author_id = (?) order by orig_pub_date";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
+    queryBooks = "SELECT isbn, book_title, orig_pub_date FROM book WHERE author_id = (?) ORDER BY orig_pub_date;";
 
     MBG.con.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
         if (err) {
@@ -144,8 +144,8 @@ MBG.app.get('/thisAuthor', function (req, res) {
 MBG.app.get('/thisBook', function (req, res) {
     var queryAuthor, queryBook, context = {};
 
-    queryBook = "select * from books where isbn = (?)";
-    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
+    queryBook = "SELECT * FROM book WHERE isbn = (?)";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
 
     MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
@@ -166,20 +166,34 @@ MBG.app.get('/thisBook', function (req, res) {
 
 // form to add or edit book
 MBG.app.get('/myBooksAddEdit', function (req, res) {
-    res.render('myBooksAddEdit');
-});
+    var queryClass, queryRating, context = {};
 
-// page of class required criteria
-MBG.app.get('/myBooksLinks', function (req, res) {
-    res.render('myBooksLinks');
+    queryClass = "SELECT class_id, class_name FROM classification";
+    queryRating = "SELECT * FROM book_rating ORDER BY book_rate_id DESC";
+
+    MBG.con.query(queryClass, function (err, resultClass) {
+        if (err) {
+            context.error = "Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        context.classes = resultClass;
+        MBG.con.query(queryRating, function (err, resultRating) {
+            if (err) {
+                context.error = "Could not connect to database.  Please try again later.";
+                throw err;
+            }
+            context.ratings = resultRating;
+            res.render('myBooksAddEdit', context);
+        });
+    });
 });
 
 // looks up book by isbn, fills in form if book is listed
 MBG.app.get('/isbnResults', function (req, res) {
     var queryAuthor, queryBook, response = {};
 
-    queryBook = "select * from books where isbn = (?)";
-    queryAuthor = "select last_name, first_name from authors where author_id = (?)";
+    queryBook = "SELECT * FROM book WHERE isbn = (?)";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
 
     MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {

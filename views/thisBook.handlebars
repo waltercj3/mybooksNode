@@ -5,7 +5,6 @@
         <li><a href="myBooksAuthors" >Authors</a>
         </li><li><a href="myBooksBooks">Books</a>
         </li><li><a href="myBooksAddEdit">Add</a>
-        </li><li id='criteria' class="current"><a href="myBooksLinks">CRITERIA</a>
         </li>
       </ul>
     </nav>
@@ -17,14 +16,11 @@
                 <h3>{{book.title}}</h3>
                 {{#if author}}
                         <p class='author'>By
-                            <a href="thisAuthor?authorid={{book.author_id}}">{{author.first_name}} {{author.last_name}}</a>
+                            <a href="thisAuthor?authorid={{book.author_id}}">{{author.author_first_name}} {{author.author_mid_name}} {{author.author_last_name}}</a>
                         </p>
                 {{/if}}
                 {{#if book.orig_pub_date}}
-                    <p>Originally published in {{book.orig_pub_date}}</p>
-                {{/if}}
-                {{#if book.curr_ed_date}}
-                    <p>My edition published in {{book.curr_ed_date}}</p>
+                    <p>Published in {{book.orig_pub_date}}</p>
                 {{/if}}
             {{else}}
                 <h3>something, somewhere, has gone just a little bit wrong</h3>

@@ -2,7 +2,7 @@
     -- and without add/edit 
 SELECT * FROM author ORDER BY author_last_name;
 
-SELECT book.isbn, book.book_title, book.author_id, author.author_last_name, author.author_first_name, author_mid_name 
+SELECT book.isbn, book.book_title, book.author_id, author.author_last_name, authors.author_first_name, author_mid_name,
     FROM book, author WHERE book.author_id = author.author_id ORDER BY book.book_title;
 
 SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?);
@@ -91,7 +91,7 @@ UPDATE book_reader SET book_rate_id = (?) WHERE reader_id = (?) AND isbn = (?);
 DELETE FROM book_reader WHERE reader_id = (?) and isbn = (?);
 
 -- get book classifications for form drop down menu
-SELECT class_id, class_name FROM classification;
+SELECT * FROM classification;
 
 -- get book rating options for form drop down menu
 SELECT * FROM book_rating;

@@ -1,15 +1,15 @@
-DROP TABLE IF EXISTS `Book` ;
-FLUSH TABLES `Book` ; 
+SET FOREIGN_KEY_CHECKS=0; DROP TABLE `Book`; SET FOREIGN_KEY_CHECKS=1; 
 CREATE TABLE Book
 (   isbn varchar(255) not null primary key,
     author_id int unsigned,
     book_title varchar(255),
-    book_class_id tinyint unsigned,
-    orig_pub_date year(4)
+    class_id tinyint unsigned,
+    orig_pub_date year(4),
+    FOREIGN KEY (author_id) REFERENCES Author(author_id),
+	FOREIGN KEY (class_id) REFERENCES Classification(class_id)
 );
 
-DROP TABLE IF EXISTS `Author` ;
-FLUSH TABLES `Author` ; 
+SET FOREIGN_KEY_CHECKS=0; DROP TABLE `Author`; SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE Author
 (   author_id int unsigned not null auto_increment primary key,
     author_last_name varchar(255) not null,
@@ -19,16 +19,14 @@ CREATE TABLE Author
     author_date_passed date
 );
 
-DROP TABLE IF EXISTS `Classification` ;
-FLUSH TABLES `Classification`; 
+SET FOREIGN_KEY_CHECKS=0; DROP TABLE `Classification`; SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE Classification 
 (   class_id tinyint unsigned not null auto_increment primary key,
 	class_name varchar(255),
     class_description text
 );
 
-DROP TABLE IF EXISTS `Book_Rating` ;
-FLUSH TABLES `Book_Rating`; 
+SET FOREIGN_KEY_CHECKS=0; DROP TABLE `Book_rating`; SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE Book_Rating 
 (   book_rate_id tinyint unsigned not null auto_increment primary key,
 	book_rate_description varchar(255)
@@ -41,11 +39,13 @@ CREATE TABLE Book_Reader
 	isbn varchar(255) not null,
     read_date date,
     book_rate_id tinyint unsigned,
-    PRIMARY KEY (reader_id, isbn)
+    PRIMARY KEY (reader_id, isbn),
+	FOREIGN KEY (isbn) REFERENCES Book(isbn),
+	FOREIGN KEY (book_rate_id) REFERENCES Book_rating(book_rate_id),
+	FOREIGN KEY (reader_id) REFERENCES Reader(reader_id)
 );
 
-DROP TABLE IF EXISTS `Reader` ;
-FLUSH TABLES `Reader` ; 
+SET FOREIGN_KEY_CHECKS=0; DROP TABLE `Reader`; SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE Reader
 (   reader_id int unsigned not null auto_increment primary key,
 	reader_last_name varchar(50) not null,

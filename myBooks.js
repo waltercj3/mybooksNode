@@ -83,7 +83,7 @@ MBG.app.get('/', function (req, res) {
 
 // list of authors
 MBG.app.get('/myBooksAuthors', function (req, res) {
-    var context = {}, query = "SELECT * FROM author ORDER BY author_last_name";
+    var context = {}, query = "SELECT * FROM Author ORDER BY author_last_name";
     MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
@@ -98,7 +98,7 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
 // list of books
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {}, 
-        query = "SELECT book.isbn, book.book_title, book.author_id, author.author_last_name, author.author_first_name, author_mid_name FROM book, author WHERE book.author_id = author.author_id ORDER BY book.book_title";
+        query = "SELECT Book.isbn, Book.book_title, Book.author_id, Author.author_last_name, Author.author_first_name, Author_mid_name FROM Book, Author WHERE Book.author_id = Author.author_id ORDER BY Book.book_title";
     MBG.con.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
@@ -114,8 +114,8 @@ MBG.app.get('/myBooksBooks', function (req, res) {
 MBG.app.get('/thisAuthor', function (req, res) {
     var queryAuthor, queryBooks, context = {};
 
-    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
-    queryBooks = "SELECT isbn, book_title, orig_pub_date FROM book WHERE author_id = (?) ORDER BY orig_pub_date;";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
+    queryBooks = "SELECT isbn, book_title, orig_pub_date FROM Book WHERE author_id = (?) ORDER BY orig_pub_date;";
 
     MBG.con.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
         if (err) {
@@ -144,8 +144,8 @@ MBG.app.get('/thisAuthor', function (req, res) {
 MBG.app.get('/thisBook', function (req, res) {
     var queryAuthor, queryBook, context = {};
 
-    queryBook = "SELECT * FROM book WHERE isbn = (?)";
-    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
+    queryBook = "SELECT * FROM Book WHERE isbn = (?)";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
 
     MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
@@ -168,8 +168,8 @@ MBG.app.get('/thisBook', function (req, res) {
 MBG.app.get('/myBooksAddEdit', function (req, res) {
     var queryClass, queryRating, context = {};
 
-    queryClass = "SELECT class_id, class_name FROM classification";
-    queryRating = "SELECT * FROM book_rating ORDER BY book_rate_id DESC";
+    queryClass = "SELECT class_id, class_name FROM Classification";
+    queryRating = "SELECT * FROM Book_Rating ORDER BY book_rate_id DESC";
 
     MBG.con.query(queryClass, function (err, resultClass) {
         if (err) {
@@ -192,8 +192,8 @@ MBG.app.get('/myBooksAddEdit', function (req, res) {
 MBG.app.get('/isbnResults', function (req, res) {
     var queryAuthor, queryBook, response = {};
 
-    queryBook = "SELECT * FROM book WHERE isbn = (?)";
-    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM author WHERE author_id = (?)";
+    queryBook = "SELECT * FROM Book WHERE isbn = (?)";
+    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
 
     MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {

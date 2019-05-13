@@ -30,7 +30,7 @@ INSERT INTO Author (author_last_name, author_first_name, author_mid_name) VALUES
     ('Carver', 'Raymond', NULL),
     ('Morgan', 'Richard', 'K.');
     
-INSERT INTO Book (isbn, author_id, book_title, book_class_id, orig_pub_date) VALUES
+INSERT INTO Book (isbn, author_id, book_title, class_id, orig_pub_date) VALUES
     ('0425034348', 2, 'Podkayne of Mars', 1, 1963),
     ('0345373901', 12, 'Venus in Copper', 4, 1991),
     ('0380792966', 13, 'Child of the River', NULL, 1997),

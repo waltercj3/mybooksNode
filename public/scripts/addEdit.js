@@ -26,10 +26,10 @@ MBAG.emptyFields = function () {
     MBAG.titleInput.value = "";
     MBAG.lastNameInput.value = "";
     MBAG.firstNameInput.value = "";
+    MBAG.midNameInput.value = "";
     MBAG.classInput.value = "";
     MBAG.ratingInput.value = "";
     MBAG.pubInput.value = "";
-    MBAG.myEdInput.value = "";
 }
 
 MBAG.bindFetchGet = function () {

@@ -241,8 +241,8 @@ MBG.app.post('/addEditBook', function (req, res) {
     tempPub = parseInt(book.orig_pub_date);
     if (book.isbn === "" || parseInt(book.isbn) === 0 || auth.author_last_name === "" || tempId < 1 || tempId > 4 || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
         res.type('plain/text');
-        res.status(500);
-        res.send('500 - Server Error');
+        res.status(400);
+        res.send('400 - Bad Request');
         return;
     }
     values = [book.isbn, book.book_title, auth.author_last_name, auth.author_first_name, auth.author_mid_name, tempId, tempPub];

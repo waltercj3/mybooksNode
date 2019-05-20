@@ -16,7 +16,7 @@ BEGIN
 	DECLARE a_id int;
 
 	SELECT author_id INTO a_id
-    FROM author
+    FROM Author
     WHERE author_last_name LIKE p_a_last_name
     AND author_first_name LIKE p_a_first_name
     AND author_mid_name LIKE p_a_mid_name;

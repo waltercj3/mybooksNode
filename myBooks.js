@@ -245,7 +245,7 @@ MBG.app.post('/addEditBook', function (req, res) {
         res.send('400 - Bad Request');
         return;
     }
-    values = [book.isbn, book.book_title, auth.author_last_name, auth.author_first_name, auth.author_mid_name, tempId, tempPub];
+    values = [book.isbn, book.book_title, auth.author_last_name, auth.author_first_name, auth.author_mid_name, book.class_id, book.orig_pub_date];
     MBG.pool.query(queryCheck, [book.isbn], function (err, resultBook) {
         if (err) {
             response.error = "Could not connect to database.  Please try again later.";

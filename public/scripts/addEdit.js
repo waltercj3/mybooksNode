@@ -29,15 +29,12 @@ MBAG.emptyFields = function () {
     MBAG.lastNameInput.value = "";
     MBAG.firstNameInput.value = "";
     MBAG.midNameInput.value = "";
-    MBAG.classInput.value = "";
-    MBAG.ratingInput.value = "";
+    MBAG.classInput.value = "0";
+    MBAG.ratingInput.value = "0";
     MBAG.pubInput.value = "";
 };
 
 MBAG.validateIsbn = function (isbn) {
-    if (isbn === '' || parseInt(isbn) === 0) {
-        return false;
-    }
     isbn = isbn.trim().toUpperCase();// clean up isbn input
     isbn = isbn.replace(/[^0-9,X]/g, "");// make isbn numbers only
     if (isbn.length < 10) {// older isbn numbers can have less than 10 digits, but 10 needed for lookup
@@ -45,7 +42,8 @@ MBAG.validateIsbn = function (isbn) {
             isbn = "0" + isbn;
         }
     }
-    if (isbn.length !== 10 && isbn.length !== 13) {
+
+    if (parseInt(isbn) === 0 || (isbn.length !== 10 && isbn.length !== 13)) {
         return false;
     } else {
         return isbn;

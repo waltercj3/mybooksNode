@@ -18,16 +18,16 @@ INSERT INTO Author (author_last_name, author_first_name, author_mid_name) VALUES
     ('Heinlein', 'Robert', 'A.'),
     ('Corey', 'James', 'S. A.'),
     ('Banks', 'Iain', 'M.'),
-    ('Bukowski', 'Charles', NULL),
-    ('Brin', 'David', NULL),
+    ('Bukowski', 'Charles', ''),
+    ('Brin', 'David', ''),
     ('Dick', 'Philip', 'K.'),
     ('Le Guin', 'Ursula', 'K.'),
-    ('de Lint', 'Charles', NULL),
-    ('Wolfe', 'Gene', NULL),
+    ('de Lint', 'Charles', ''),
+    ('Wolfe', 'Gene', ''),
     ('Delany', 'Samuel', 'R.'),
-    ('Davis', 'Lindsey', NULL),
+    ('Davis', 'Lindsey', ''),
     ('McAuley', 'Paul', 'J.'),
-    ('Carver', 'Raymond', NULL),
+    ('Carver', 'Raymond', ''),
     ('Morgan', 'Richard', 'K.');
     
 INSERT INTO Book (isbn, author_id, book_title, class_id, orig_pub_date) VALUES

@@ -30,7 +30,7 @@
                 <td> <input type="text" name="title" maxlength="60" size="45" id="titleInput"></td>
             </tr>
             <tr>
-                <td>Author Last Name:</td>
+                <td>Author <strong>Last</strong> Name:</td>
                 <td> <input type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput"></td>
             </tr>
             <tr>
@@ -52,7 +52,7 @@
                                 {{#each classes}}
                                     <option value="{{this.class_id}}">{{this.class_name}}</option>
                                 {{/each}}
-                                <option value='0' selected></option>
+                                <option value="0" selected></option>
                             </select>
                         {{else}}
                             something, somewhere, has gone just a little bit wrong
@@ -81,7 +81,7 @@
             </tr>
             <tr>
                 <td>Year of Publication:</td>
-                <td><input type="number" name="orig_pub_date" min="1888" max="2088" id="pubInput"></td>
+                <td><input type="number" name="orig_pub_date" min="1000" max="2088" id="pubInput"></td>
             </tr>
             <tr>
                 <td></td>

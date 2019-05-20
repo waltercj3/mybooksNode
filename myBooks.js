@@ -13,7 +13,7 @@ const MBG = {
     bodyParser: null,
     path: null,
     mysql: null,
-    con: null,              // database connection
+    pool: null,              // database connection pool
     info: null,             // implementation specific values
     fs: null,
     shuffleArray: null      // function to change order of slideshow
@@ -42,7 +42,8 @@ MBG.app.use(MBG.express.static('public'));
 
 MBG.mysql = require('mysql');
 
-MBG.con = MBG.mysql.createConnection({
+MBG.pool = MBG.mysql.createPool({
+    connectionLimit: 100,
     host: MBG.info.host,
     user: MBG.info.user,
     password: MBG.info.password,
@@ -84,7 +85,7 @@ MBG.app.get('/', function (req, res) {
 // list of authors
 MBG.app.get('/myBooksAuthors', function (req, res) {
     var context = {}, query = "SELECT * FROM Author ORDER BY author_last_name";
-    MBG.con.query(query, function (err, result) {
+    MBG.pool.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
@@ -99,7 +100,7 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {}, 
         query = "SELECT Book.isbn, Book.book_title, Book.author_id, Author.author_last_name, Author.author_first_name, Author_mid_name FROM Book, Author WHERE Book.author_id = Author.author_id ORDER BY Book.book_title";
-    MBG.con.query(query, function (err, result) {
+    MBG.pool.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
@@ -117,13 +118,13 @@ MBG.app.get('/thisAuthor', function (req, res) {
     queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
     queryBooks = "SELECT isbn, book_title, orig_pub_date FROM Book WHERE author_id = (?) ORDER BY orig_pub_date;";
 
-    MBG.con.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
+    MBG.pool.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
         }
         context.author = resultAuthor[0];
-        MBG.con.query(queryBooks, [req.query.authorid], function (err, resultBooks) {
+        MBG.pool.query(queryBooks, [req.query.authorid], function (err, resultBooks) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
                 throw err;
@@ -147,13 +148,13 @@ MBG.app.get('/thisBook', function (req, res) {
     queryBook = "SELECT * FROM Book WHERE isbn = (?)";
     queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
 
-    MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
+    MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             throw err;
         }
         context.book = resultBook[0];
-        MBG.con.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+        MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
                 throw err;
@@ -171,13 +172,13 @@ MBG.app.get('/myBooksAddEdit', function (req, res) {
     queryClass = "SELECT class_id, class_name FROM Classification";
     queryRating = "SELECT * FROM Book_Rating ORDER BY book_rate_id DESC";
 
-    MBG.con.query(queryClass, function (err, resultClass) {
+    MBG.pool.query(queryClass, function (err, resultClass) {
         if (err) {
             context.error = "Could not connect to database.  Please try again later.";
             throw err;
         }
         context.classes = resultClass;
-        MBG.con.query(queryRating, function (err, resultRating) {
+        MBG.pool.query(queryRating, function (err, resultRating) {
             if (err) {
                 context.error = "Could not connect to database.  Please try again later.";
                 throw err;
@@ -195,7 +196,7 @@ MBG.app.get('/isbnResults', function (req, res) {
     queryBook = "SELECT * FROM Book WHERE isbn = (?)";
     queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
 
-    MBG.con.query(queryBook, [req.query.isbn], function (err, resultBook) {
+    MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {
         if (err) {
             response.error = "Could not connect to database.  Please try again later.";
             res.type('plain/text');
@@ -205,7 +206,7 @@ MBG.app.get('/isbnResults', function (req, res) {
         }
         if (resultBook[0]) {
             response.book = resultBook[0];
-            MBG.con.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+            MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
                 if (err) {
                     response.error = "Could not connect to database.  Please try again later.";
                     res.type('plain/text');
@@ -229,10 +230,66 @@ MBG.app.get('/isbnResults', function (req, res) {
 
 // result of add/edit button on myBooksAddEdit page
 MBG.app.post('/addEditBook', function (req, res) {
-    var response = "The server has received this data, but the database has not been updated as that functionality does not yet exist.";
-    res.type('plain/text');
-    res.status(200);
-    res.send(response);
+    var book, auth, tempId, tempPub, values, response = {},
+            queryCheck = 'SELECT * FROM Book WHERE isbn = (?)',
+            queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)",
+            queryAdd = 'CALL AddBook(?, ?, ?, ?, ?, ?, ?)';
+
+    book = req.body.book;
+    auth = req.body.author;
+    tempId = parseInt(book.class_id);
+    tempPub = parseInt(book.orig_pub_date);
+    if (book.isbn === "" || parseInt(book.isbn) === 0 || auth.author_last_name === "" || tempId < 1 || tempId > 4 || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
+        res.type('plain/text');
+        res.status(500);
+        res.send('500 - Server Error');
+        return;
+    }
+    values = [book.isbn, book.book_title, auth.author_last_name, auth.author_first_name, auth.author_mid_name, tempId, tempPub];
+    MBG.pool.query(queryCheck, [book.isbn], function (err, resultBook) {
+        if (err) {
+            response.error = "Could not connect to database.  Please try again later.";
+            res.type('plain/text');
+            res.status(500);
+            res.send('500 - Server Error');
+            throw err;
+        }
+        if (resultBook[0]) {
+            response.book = resultBook[0];
+            MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+                if (err) {
+                    response.error = "Could not connect to database.  Please try again later.";
+                    res.type('plain/text');
+                    res.status(500);
+                    res.send('500 - Server Error');
+                    throw err;
+                }
+                response.author = resultAuthor[0];
+                response.added = false;
+                response.message = "This book is already in the database.";
+                res.type('application/json');
+                res.status(200);
+                res.send(response);
+            });
+        } else {
+            MBG.pool.query(queryAdd, values, function (err, result) {
+                if (err) {
+                    console.log(err);
+                    response.error = "Error: Could not connect to database.  Please try again later.";
+                    res.type('plain/text');
+                    res.status(500);
+                    res.send('500 - Server Error');
+                    throw err;
+                } else {
+                    response.added = true;
+                    response.message = "The book was successfully added to the database. Thank you.";
+                    res.type('application/json');
+                    res.status(200);
+                    res.send(response);
+                }
+            });
+        }
+    });
 });
 
 MBG.app.use(function (req, res) {

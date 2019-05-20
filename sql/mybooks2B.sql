@@ -2,7 +2,7 @@
 
 DROP TABLE IF EXISTS `Book_Reader`;
 DROP TABLE IF EXISTS `Reader`;
-DROP TABLE IF EXISTS `Book_Rating`;
+DROP TABLE IF EXISTS `Book_rating`;
 DROP TABLE IF EXISTS `Book`;
 DROP TABLE IF EXISTS `Classification`;
 DROP TABLE IF EXISTS `Author`;
@@ -10,8 +10,8 @@ DROP TABLE IF EXISTS `Author`;
 CREATE TABLE Author
 (   author_id int unsigned not null auto_increment primary key,
     author_last_name varchar(255) not null,
-    author_first_name varchar(255),
-    author_mid_name varchar(255),
+    author_first_name varchar(255) DEFAULT '',
+    author_mid_name varchar(255) DEFAULT '',
     author_date_of_birth date,
     author_date_passed date
 );
@@ -39,8 +39,8 @@ CREATE TABLE Book_Rating
 
 CREATE TABLE Reader
 (   reader_id int unsigned not null auto_increment primary key,
-	reader_last_name varchar(50) not null,
-    reader_first_name varchar(50),
+	reader_last_name varchar(50) NOT NULL,
+    reader_first_name varchar(50) DEFAULT "",
     reader_email varchar(255) NOT NULL,
     reader_password varchar(255) NOT NULL,
     UNIQUE KEY email_password (reader_email, reader_password)
@@ -53,9 +53,10 @@ CREATE TABLE Book_Reader
     book_rate_id tinyint unsigned,
     PRIMARY KEY (reader_id, isbn),
 	FOREIGN KEY (isbn) REFERENCES Book(isbn),
-	FOREIGN KEY (book_rate_id) REFERENCES Book_Rating(book_rate_id),
+	FOREIGN KEY (book_rate_id) REFERENCES Book_rating(book_rate_id),
 	FOREIGN KEY (reader_id) REFERENCES Reader(reader_id)
 );
+
 
 -- CREATE INDEX book_title ON books (book_title);
 -- CREATE INDEX author_name ON authors (author_last_name);

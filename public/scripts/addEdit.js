@@ -111,7 +111,7 @@ MBAG.bindAddEditPost = function () {
             MBAG.bookMessage.innerHTML = "<p>An ISBN should have 10 or 13 digits.  Please try again.</p>";
             return;
         }
-        if (MBAG.lastNameInput.value !== "") {
+        if (MBAG.titleInput.value !== "") {
             MBAG.formData.book.book_title = MBAG.titleInput.value;
         } else {
             MBAG.bookMessage.innerHTML = "<p>A title for the book is required.  Please try again.</p>";

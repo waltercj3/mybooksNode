@@ -2,7 +2,7 @@
 
 DROP TABLE IF EXISTS `Book_Reader`;
 DROP TABLE IF EXISTS `Reader`;
-DROP TABLE IF EXISTS `Book_rating`;
+DROP TABLE IF EXISTS `Book_Rating`;
 DROP TABLE IF EXISTS `Book`;
 DROP TABLE IF EXISTS `Classification`;
 DROP TABLE IF EXISTS `Author`;
@@ -53,7 +53,7 @@ CREATE TABLE Book_Reader
     book_rate_id tinyint unsigned,
     PRIMARY KEY (reader_id, isbn),
 	FOREIGN KEY (isbn) REFERENCES Book(isbn),
-	FOREIGN KEY (book_rate_id) REFERENCES Book_rating(book_rate_id),
+	FOREIGN KEY (book_rate_id) REFERENCES Book_Rating(book_rate_id),
 	FOREIGN KEY (reader_id) REFERENCES Reader(reader_id)
 );
 

@@ -145,7 +145,7 @@ MBG.app.get('/thisAuthor', function (req, res) {
 MBG.app.get('/thisBook', function (req, res) {
     var queryAuthor, queryBook, context = {};
 
-    queryBook = "SELECT * FROM Book WHERE isbn = (?)";
+    queryBook = "SELECT isbn, author_id, book_title, class_name, orig_pub_date FROM Book, Classification WHERE isbn = (?) AND Book.class_id = Classification.class_id";
     queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
 
     MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {

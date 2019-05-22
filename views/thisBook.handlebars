@@ -22,6 +22,10 @@
                 {{#if book.orig_pub_date}}
                     <p>Published in {{book.orig_pub_date}}</p>
                 {{/if}}
+                {{#if book.class_name}}
+                    <p>Classified as: {{book.class_name}}</p>
+                {{/if}}
+                <p>ISBN: {{book.isbn}}</p>
             {{else}}
                 <h3>something, somewhere, has gone just a little bit wrong</h3>
             {{/if}}

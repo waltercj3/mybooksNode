@@ -48,7 +48,6 @@ MBAG.validateIsbn = function (isbn) {
     } else {
         return isbn;
     }
-
 }
 
 MBAG.bindFetchGet = function () {

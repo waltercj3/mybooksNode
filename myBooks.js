@@ -13,8 +13,9 @@ const MBG = {
     bodyParser: null,
     path: null,
     mysql: null,
-    pool: null,              // database connection pool
+    pool: null,             // database connection pool
     info: null,             // implementation specific values
+    utilities: null,        // shared functions and values
     fs: null,
     shuffleArray: null      // function to change order of slideshow
 };
@@ -34,6 +35,7 @@ MBG.app.set('view engine', 'handlebars');
 MBG.path = require('path');
 //MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
 MBG.info = require("./info.js");
+MBG.utilities = require("./public/scripts/utilities.js");
 
 MBG.app.set('port', MBG.info.port);
 
@@ -143,26 +145,42 @@ MBG.app.get('/thisAuthor', function (req, res) {
 
 // selected book
 MBG.app.get('/thisBook', function (req, res) {
-    var queryAuthor, queryBook, context = {};
+    var queryAuthor, queryBook, queryClass, isbn, context = {};
 
-    queryBook = "SELECT isbn, author_id, book_title, class_name, orig_pub_date FROM Book, Classification WHERE isbn = (?) AND Book.class_id = Classification.class_id";
+    queryBook = "SELECT * FROM Book WHERE isbn = (?)";
     queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
+    queryClass = "SELECT class_name FROM Classification WHERE class_id = (?)";
 
-    MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {
-        if (err) {
-            context.error = "Error: Could not connect to database.  Please try again later.";
-            throw err;
-        }
-        context.book = resultBook[0];
-        MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+    isbn = MBG.utilities.validateIsbn(req.query.isbn);
+
+    if (isbn) {
+        MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
                 throw err;
             }
-            context.author = resultAuthor[0];
-            res.render('thisBook', context);
+            context.book = resultBook[0];
+            MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+                if (err) {
+                    context.error = "Error: Could not connect to database.  Please try again later.";
+                    throw err;
+                }
+                context.author = resultAuthor[0];
+                MBG.pool.query(queryClass, [resultBook[0].class_id], function (err, resultClass) {
+                    if (err) {
+                        context.error = "Error: Could not connect to database.  Please try again later.";
+                        throw err;
+                    }
+                    context.book.class_name = resultClass[0] ? resultClass[0].class_name : null;
+                    res.render('thisBook', context);
+                });
+            });
         });
-    });
+    } else {
+        res.type('plain/text');
+        res.status(400);
+        res.send('400 - Bad Request');
+    }
 });
 
 // form to add or edit book

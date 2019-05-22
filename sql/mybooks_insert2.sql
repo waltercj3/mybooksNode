@@ -32,7 +32,7 @@ INSERT INTO Author (author_last_name, author_first_name, author_mid_name) VALUES
     
 INSERT INTO Book (isbn, author_id, book_title, class_id, orig_pub_date) VALUES
     ('0425034348', 2, 'Podkayne of Mars', 1, 1963),
-    ('0345373901', 12, 'Venus in Copper', 4, 1991),
+    ('0345373901', 12, 'Venus in Copper', 3, 1991),
     ('0380792966', 13, 'Child of the River', NULL, 1997),
     ('0812543173', 11, 'They Fly at Ciron', NULL, 1971),
     ('9781407234687', 10, 'The Book of the New Sun: Shadow and Claw', NULL, 1980),
@@ -40,7 +40,7 @@ INSERT INTO Book (isbn, author_id, book_title, class_id, orig_pub_date) VALUES
     ('0061054003', 8, 'Searoad', NULL, 1991), 
     ('0312940513', 7, 'Clans of the Alphane Moon', 1, 1964),
     ('9780765342621', 6, 'Existence', 1, 2012),
-    ('9780061177583', 5, 'Ham on Rye: A Novel', 4, 1982),
+    ('9780061177583', 5, 'Ham on Rye: A Novel', 3, 1982),
     ('9780316123419', 4, 'Surface Detail', 1, 2010),
     ('9780316129084', 3, 'Leviathan Wakes', 1, 2011), 
     ('9780553382952', 1, 'Light', 1, 2002);

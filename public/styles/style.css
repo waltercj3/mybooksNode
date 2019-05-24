@@ -108,3 +108,22 @@ nav li a:hover {
     float: right;
     width: 119px;
 }
+
+form.tbl {
+    display: table;
+}
+
+p.tbl {
+    display: table-row;
+    margin: 7px 0px;
+}
+
+label.tbl {
+    display: table-cell;
+    padding-right: 7px;
+}
+
+input.tbl, select.tbl {
+    display: table-cell;
+    margin: 7px;
+}

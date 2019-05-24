@@ -12,43 +12,35 @@
     <div id="bookMessage">
         <p>Enter a 10 or 13 digit ISBN to check if this book is already in our database.</p>
     </div>
-    <form id="bookForm">
-        <table border="0">
-            <tr>
-                <td>ISBN:</td>
-                <td>
-                    <table>
-                        <tr>
-                            <td class="isbncheck"><input type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput"></td>
-                            <td class="isbncheck"><input type="button" name="fetch" value="check" id="fetchButton"></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>Title:</td>
-                <td> <input type="text" name="title" maxlength="60" size="45" id="titleInput"></td>
-            </tr>
-            <tr>
-                <td>Author <strong>Last</strong> Name:</td>
-                <td> <input type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput"></td>
-            </tr>
-            <tr>
-                <td>Author First Name:</td>
-                <td> <input type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput"></td>
-            </tr>
-            <tr>
-                <td>Author Middle Name:</td>
-                <td> <input type="text" name="authorMid" maxlength="30" size="30" id="midNameInput"></td>
-            </tr>
-            <tr>
-                <td>Classification:</td>
-                <td>
+    <form id="bookForm" class="tbl">
+            <p class="tbl">
+                <label class="tbl" for="isbnInput">ISBN:</label>
+                <input class="tbl" type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput">
+                <input class="tbl" type="button" name="fetch" value="check" id="fetchButton">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="titleInput">Title:</label>
+                <input class="tbl" type="text" name="title" maxlength="60" size="45" id="titleInput">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="lastNameInput">Author <strong>Last</strong> Name:</label>
+                <input class="tbl" type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="firstNameInput">Author First Name:</label>
+                <input class="tbl" type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="midNameInput">Author Middle Name:</label>
+                <input class="tbl" type="text" name="authorMid" maxlength="30" size="30" id="midNameInput">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="classInput">Classification:</label>
                     {{#if error}}
                         {{error}}
                     {{else}}
                         {{#if classes}}
-                            <select name="class" id="classInput">
+                            <select class="tbl" name="class" id="classInput">
                                 {{#each classes}}
                                     <option value="{{this.class_id}}">{{this.class_name}}</option>
                                 {{/each}}
@@ -58,16 +50,14 @@
                             something, somewhere, has gone just a little bit wrong
                         {{/if}}
                     {{/if}}
-                </td>
-            </tr>
-            <tr>
-                <td>Rating:</td>
-                <td>
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="ratingInput">Rating:</label>
                     {{#if error}}
                         {{error}}
                     {{else}}
                         {{#if ratings}}
-                            <select name="rating" id="ratingInput">
+                            <select class="tbl" name="rating" id="ratingInput">
                                 {{#each ratings}}
                                     <option value="{{this.book_rate_id}}">{{this.book_rate_description}}</option>
                                 {{/each}}
@@ -77,17 +67,15 @@
                             something, somewhere, has gone just a little bit wrong
                         {{/if}}
                     {{/if}}
-                </td>
-            </tr>
-            <tr>
-                <td>Year of Publication:</td>
-                <td><input type="number" name="orig_pub_date" min="1000" max="2088" id="pubInput"></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" value="Add/Edit Book" id="addEditButton"></td>
-            </tr>
-        </table>
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="pubInput">Year of Publication:</label>
+                <input class="tbl" type="number" name="orig_pub_date" min="1000" max="2088" id="pubInput">
+            </p>
+            <p class="tbl">
+                <label class="tbl" for="addEditButton"></label>
+                <input class="tbl" type="submit" value="Add/Edit Book" id="addEditButton">
+            </p>
     </form>
 </div>
 <script type="text/javascript" src="scripts/addEdit.js"></script>

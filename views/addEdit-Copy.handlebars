@@ -1,0 +1,93 @@
+<h1><a href="/">My Books</a></h1>
+
+<nav>
+    <ul>
+        <li><a href="myBooksAuthors" >Authors</a>
+        </li><li><a href="myBooksBooks">Books</a>
+        </li><li class="current"><a href="#">Add</a>
+        </li>
+    </ul>
+</nav>
+<div>
+    <div id="bookMessage">
+        <p>Enter a 10 or 13 digit ISBN to check if this book is already in our database.</p>
+    </div>
+    <form id="bookForm">
+        <table border="0">
+            <tr>
+                <td>ISBN:</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="isbncheck"><input type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput"></td>
+                            <td class="isbncheck"><input type="button" name="fetch" value="check" id="fetchButton"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Title:</td>
+                <td> <input type="text" name="title" maxlength="60" size="45" id="titleInput"></td>
+            </tr>
+            <tr>
+                <td>Author <strong>Last</strong> Name:</td>
+                <td> <input type="text" name="authorLast" maxlength="30" size="30" id="lastNameInput"></td>
+            </tr>
+            <tr>
+                <td>Author First Name:</td>
+                <td> <input type="text" name="authorFirst" maxlength="30" size="30" id="firstNameInput"></td>
+            </tr>
+            <tr>
+                <td>Author Middle Name:</td>
+                <td> <input type="text" name="authorMid" maxlength="30" size="30" id="midNameInput"></td>
+            </tr>
+            <tr>
+                <td>Classification:</td>
+                <td>
+                    {{#if error}}
+                        {{error}}
+                    {{else}}
+                        {{#if classes}}
+                            <select name="class" id="classInput">
+                                {{#each classes}}
+                                    <option value="{{this.class_id}}">{{this.class_name}}</option>
+                                {{/each}}
+                                <option value="0" selected></option>
+                            </select>
+                        {{else}}
+                            something, somewhere, has gone just a little bit wrong
+                        {{/if}}
+                    {{/if}}
+                </td>
+            </tr>
+            <tr>
+                <td>Rating:</td>
+                <td>
+                    {{#if error}}
+                        {{error}}
+                    {{else}}
+                        {{#if ratings}}
+                            <select name="rating" id="ratingInput">
+                                {{#each ratings}}
+                                    <option value="{{this.book_rate_id}}">{{this.book_rate_description}}</option>
+                                {{/each}}
+                                <option value='0' selected></option>
+                            </select>
+                        {{else}}
+                            something, somewhere, has gone just a little bit wrong
+                        {{/if}}
+                    {{/if}}
+                </td>
+            </tr>
+            <tr>
+                <td>Year of Publication:</td>
+                <td><input type="number" name="orig_pub_date" min="1000" max="2088" id="pubInput"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Add/Edit Book" id="addEditButton"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<script type="text/javascript" src="scripts/addEdit.js"></script>

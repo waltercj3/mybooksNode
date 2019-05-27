@@ -14,9 +14,9 @@
         {{else}}
             {{#if book}}
                 <h3 data-isbn="{{book.isbn}}" id="thisBook">{{book.book_title}}</h3>
-                        <p class='author'>By
-                            <a href="thisAuthor?authorid={{book.author_id}}">{{book.author_first_name}} {{book.author_mid_name}} {{book.author_last_name}}</a>
-                        </p>
+                <p class='author'>By
+                    <a href="thisAuthor?authorid={{book.author_id}}">{{book.author_first_name}} {{book.author_mid_name}} {{book.author_last_name}}</a>
+                </p>
                 {{#if book.orig_pub_date}}
                     <p>Published in {{book.orig_pub_date}}</p>
                 {{/if}}
@@ -37,18 +37,31 @@
     <div id="bookModal" class="modal">
         <div class="modalContent">
             <span class="close">&times</span>
-            <form id="editBookForm" class="tbl" action="" method="post">
+            <form id="editBookForm" class="tbl" action="thisBook?isbn={{book.isbn}}" method="post">
+                <input type="submit" disabled style="display: none" aria-hidden="true" />
                 <p class="tbl">
                     <label class="tbl" for="isbnInput">ISBN:</label>
                     <input class="tbl" type="text" name="isbn" maxlength="19" size="19" id="isbnInput" value="{{book.isbn}}" readonly>
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="titleInput">Title:</label>
-                    <input class="tbl" type="text" name="title" maxlength="60" size="45" id="titleInput" value="{{book.book_title}}" required>
+                    <input class="tbl" type="text" name="title" maxlength="60" size="45" id="titleInput" value="{{book.book_title}}" required autofocus>
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="authorInput">Author:</label>
-                    <input class="tbl" type="text" name="author" maxlength="60" size="45" id="authorInput" value="{{book.author_last_name}}, {{book.author_first_name}} {{book.author_mid_name}}">
+                    <input class="tbl" list="authors" name="author" maxlength="60" size="45" id="authorInput" value="{{book.author_last_name}}, {{book.author_first_name}} {{book.author_mid_name}}" required>
+                    {{#if error}}
+                        {{error}}
+                    {{else}}
+                        {{#if authors}}
+                            <datalist id="authors">
+                                {{#each authors}}
+                                    <option data-author_id="{{this.author_id}}" value="{{this.author_last_name}}, {{this.author_first_name}} {{this.author_mid_name}}"></option>
+                                {{/each}}
+                            </datalist>
+                        {{/if}}
+                    {{/if}}
+                    <input type="hidden" name="author_id" value="{{book.author_id}}">
                 </p>
             <p class="tbl">
                 <label class="tbl" for="classInput">Classification:</label>

@@ -17,7 +17,8 @@ const MBG = {
     info: null,             // implementation specific values
     utilities: null,        // shared functions and values
     fs: null,
-    shuffleArray: null      // function to change order of slideshow
+    shuffleArray: null,      // function to change order of slideshow
+    renderThisBook: null
 };
 
 MBG.express = require('express');
@@ -143,13 +144,13 @@ MBG.app.get('/thisAuthor', function (req, res) {
     });
 });
 
-// selected book
-MBG.app.get('/thisBook', function (req, res) {
-    var queryBook, queryClasses, queryRatings, isbn, context = {};
+MBG.renderThisBook = function (req, res, context) {
+    var queryBook, queryClasses, queryRatings, queryAuthors, isbn;
 
     queryBook = "SELECT isbn, book_title, Book.author_id, author_last_name, author_first_name, author_mid_name, orig_pub_date, Book.class_id FROM Book, Author, Classification WHERE Book.isbn = (?) AND Book.author_id = Author.author_id";
     queryClasses = "SELECT class_id, class_name FROM Classification";
     queryRatings = "SELECT book_rate_id, book_rate_description FROM Book_Rating ORDER BY book_rate_id DESC";
+    queryAuthors = "SELECT author_id, author_last_name, author_first_name, author_mid_name FROM Author";
 
     isbn = MBG.utilities.validateIsbn(req.query.isbn);
 
@@ -178,7 +179,14 @@ MBG.app.get('/thisBook', function (req, res) {
                         throw err;
                     }
                     context.ratings = resultRatings;
-                    res.render('thisBook', context);
+                    MBG.pool.query(queryAuthors, function (err, resultAuthors) {
+                        if (err) {
+                            context.error = "Error: Could not connect to database.  Please try again later.";
+                            throw err;
+                        }
+                        context.authors = resultAuthors;
+                        res.render('thisBook', context);
+                    });
                 });
             });
         });
@@ -187,6 +195,27 @@ MBG.app.get('/thisBook', function (req, res) {
         res.status(400);
         res.send('400 - Bad Request');
     }
+
+};
+
+// selected book
+MBG.app.get('/thisBook', function (req, res) {
+    var context = {};
+    MBG.renderThisBook(req, res, context);
+});
+
+MBG.app.post('/thisBook', function (req, res) {
+    var values = [], context = {},
+            query = "UPDATE Book SET author_id = (?), book_title = (?), class_id = (?), orig_pub_date = (?) WHERE isbn = (?)";
+    values = [req.body.author_id, req.body.book_title, req.body.class_id, req.body.orig_pub_date, req.body.isbn];
+    MBG.pool.query(query, values, function (err, result) {
+        console.log(result);
+        if (err) {
+            context.error = "Could not connect to database.  Please try again later.";
+            throw err;
+        }
+        MBG.renderThisBook(req, res, context);
+    });
 });
 
 // form to add or edit book
@@ -298,7 +327,6 @@ MBG.app.post('/addEditBook', function (req, res) {
         } else {
             MBG.pool.query(queryAdd, values, function (err, result) {
                 if (err) {
-                    console.log(err);
                     response.error = "Error: Could not connect to database.  Please try again later.";
                     res.type('plain/text');
                     res.status(500);

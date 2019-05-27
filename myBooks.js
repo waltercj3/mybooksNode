@@ -145,11 +145,11 @@ MBG.app.get('/thisAuthor', function (req, res) {
 
 // selected book
 MBG.app.get('/thisBook', function (req, res) {
-    var queryAuthor, queryBook, queryClass, isbn, context = {};
+    var queryBook, queryClasses, queryRatings, isbn, context = {};
 
-    queryBook = "SELECT * FROM Book WHERE isbn = (?)";
-    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
-    queryClass = "SELECT class_name FROM Classification WHERE class_id = (?)";
+    queryBook = "SELECT isbn, book_title, Book.author_id, author_last_name, author_first_name, author_mid_name, orig_pub_date, Book.class_id FROM Book, Author, Classification WHERE Book.isbn = (?) AND Book.author_id = Author.author_id";
+    queryClasses = "SELECT class_id, class_name FROM Classification";
+    queryRatings = "SELECT book_rate_id, book_rate_description FROM Book_Rating ORDER BY book_rate_id DESC";
 
     isbn = MBG.utilities.validateIsbn(req.query.isbn);
 
@@ -160,18 +160,24 @@ MBG.app.get('/thisBook', function (req, res) {
                 throw err;
             }
             context.book = resultBook[0];
-            MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
+            context.book.class_name = resultBook[0].class_name ? resultBook[0].class_name : null;
+            MBG.pool.query(queryClasses, function (err, resultClasses) {
                 if (err) {
                     context.error = "Error: Could not connect to database.  Please try again later.";
                     throw err;
                 }
-                context.author = resultAuthor[0];
-                MBG.pool.query(queryClass, [resultBook[0].class_id], function (err, resultClass) {
+                context.classes = resultClasses;
+                if (context.book.class_id) { // add the class_name to the book object, null if class_id is null
+                    context.book.class_name = resultClasses[context.book.class_id - 1].class_name;
+                } else {
+                    context.book.class_name = null;
+                }
+                MBG.pool.query(queryRatings, function (err, resultRatings) {
                     if (err) {
                         context.error = "Error: Could not connect to database.  Please try again later.";
                         throw err;
                     }
-                    context.book.class_name = resultClass[0] ? resultClass[0].class_name : null;
+                    context.ratings = resultRatings;
                     res.render('thisBook', context);
                 });
             });

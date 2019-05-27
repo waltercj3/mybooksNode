@@ -32,11 +32,15 @@
     <div>
         <input type="button" value="Edit This Book" id="editBook">
         <input type="button" value="Delete This Book" id="deleteBook">
-        <p id="demo"></p>
+        {{#if added}}
+            <p id="demo">{{message}}</p>
+        {{else}}
+            <p id="demo"></p>
+        {{/if}}
     </div>
     <div id="bookModal" class="modal">
         <div class="modalContent">
-            <span class="close">&times</span>
+            <span class="close"><strong>&times</strong></span>
             <form id="editBookForm" class="tbl" action="thisBook?isbn={{book.isbn}}" method="post">
                 <input type="submit" disabled style="display: none" aria-hidden="true" />
                 <p class="tbl">

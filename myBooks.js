@@ -91,25 +91,27 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
     MBG.pool.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
-            throw err;
+            console.log(err);
+        } else {
+            context.authors = result;
+            context.length = result.length;    
         }
-        context.authors = result;
-        context.length = result.length;
         res.render('myBooksAuthors', context);
     });
 });
 
 // list of books
 MBG.app.get('/myBooksBooks', function (req, res) {
-    var context = {}, 
+    var context = {},
         query = "SELECT Book.isbn, Book.book_title, Book.author_id, Author.author_last_name, Author.author_first_name, Author.author_mid_name FROM Book, Author WHERE Book.author_id = Author.author_id ORDER BY Book.book_title";
     MBG.pool.query(query, function (err, result) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
-            throw err;
+            console.log(err);
+        } else {
+            context.books = result;
+            context.length = result.length;
         }
-        context.books = result;
-        context.length = result.length;
         res.render('myBooksBooks', context);
     });
 });
@@ -124,26 +126,30 @@ MBG.app.get('/thisAuthor', function (req, res) {
     MBG.pool.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
-            throw err;
-        }
-        context.author = resultAuthor[0];
-        MBG.pool.query(queryBooks, [req.query.authorid], function (err, resultBooks) {
-            if (err) {
-                context.error = "Error: Could not connect to database.  Please try again later.";
-                throw err;
-            }
-            context.length = resultBooks.length;
-            if (context.length === 1) {
-                context.s = "";
-            } else {
-                context.s = "s";
-            }
-            context.books = resultBooks;
+            console.log(err);
             res.render('thisAuthor', context);
-        });
+        } else {
+            context.author = resultAuthor[0];
+            MBG.pool.query(queryBooks, [req.query.authorid], function (err, resultBooks) {
+                if (err) {
+                    context.error = "Error: Could not connect to database.  Please try again later.";
+                    console.log(err);
+                } else {
+                    context.length = resultBooks.length;
+                    if (context.length === 1) {
+                        context.s = "";
+                    } else {
+                        context.s = "s";
+                    }
+                    context.books = resultBooks;
+                }
+                res.render('thisAuthor', context);
+            });
+        }
     });
 });
 
+// used by thisBook for both GET and POST
 MBG.renderThisBook = function (req, res, context) {
     var queryBook, queryClasses, queryRatings, queryAuthors, isbn;
 
@@ -157,38 +163,45 @@ MBG.renderThisBook = function (req, res, context) {
     if (isbn) {
         MBG.pool.query(queryBook, [req.query.isbn], function (err, resultBook) {
             if (err) {
-                context.error = "Error: Could not connect to database.  Please try again later.";
-                throw err;
-            }
-            context.book = resultBook[0];
-            context.book.class_name = resultBook[0].class_name ? resultBook[0].class_name : null;
-            MBG.pool.query(queryClasses, function (err, resultClasses) {
-                if (err) {
-                    context.error = "Error: Could not connect to database.  Please try again later.";
-                    throw err;
-                }
-                context.classes = resultClasses;
-                if (context.book.class_id) { // add the class_name to the book object, null if class_id is null
-                    context.book.class_name = resultClasses[context.book.class_id - 1].class_name;
-                } else {
-                    context.book.class_name = null;
-                }
-                MBG.pool.query(queryRatings, function (err, resultRatings) {
+                context.error = "Could not connect to database.  Please try again later.";
+                console.log(err);
+                res.render('thisBook', context);
+            } else {
+                context.book = resultBook[0];
+                context.book.class_name = resultBook[0].class_name ? resultBook[0].class_name : null;
+                MBG.pool.query(queryClasses, function (err, resultClasses) {
                     if (err) {
-                        context.error = "Error: Could not connect to database.  Please try again later.";
-                        throw err;
-                    }
-                    context.ratings = resultRatings;
-                    MBG.pool.query(queryAuthors, function (err, resultAuthors) {
-                        if (err) {
-                            context.error = "Error: Could not connect to database.  Please try again later.";
-                            throw err;
-                        }
-                        context.authors = resultAuthors;
+                        context.error = "Could not connect to database.  Please try again later.";
+                        console.log(err);
                         res.render('thisBook', context);
-                    });
+                    } else {
+                        context.classes = resultClasses;
+                        if (context.book.class_id) { // add the class_name to the book object, null if class_id is null
+                            context.book.class_name = resultClasses[context.book.class_id - 1].class_name;
+                        } else {
+                            context.book.class_name = null;
+                        }
+                        MBG.pool.query(queryRatings, function (err, resultRatings) {
+                            if (err) {
+                                context.error = "Could not connect to database.  Please try again later.";
+                                console.log(err);
+                                res.render('thisBook', context);
+                            } else {
+                                context.ratings = resultRatings;
+                                MBG.pool.query(queryAuthors, function (err, resultAuthors) {
+                                    if (err) {
+                                        response.error = "Could not connect to database.  Please try again later.";
+                                        console.log(err);
+                                    } else {
+                                        context.authors = resultAuthors;
+                                    }
+                                    res.render('thisBook', context);
+                                });
+                            }
+                        });
+                    }
                 });
-            });
+            }
         });
     } else {
         res.type('plain/text');
@@ -204,18 +217,43 @@ MBG.app.get('/thisBook', function (req, res) {
     MBG.renderThisBook(req, res, context);
 });
 
+// selected book edited
 MBG.app.post('/thisBook', function (req, res) {
-    var values = [], context = {},
+    var classId, values = [], isbn, tempId, tempPub, context = {},
             query = "UPDATE Book SET author_id = (?), book_title = (?), class_id = (?), orig_pub_date = (?) WHERE isbn = (?)";
-    values = [req.body.author_id, req.body.book_title, req.body.class_id, req.body.orig_pub_date, req.body.isbn];
-    MBG.pool.query(query, values, function (err, result) {
-        console.log(result);
-        if (err) {
-            context.error = "Could not connect to database.  Please try again later.";
-            throw err;
-        }
-        MBG.renderThisBook(req, res, context);
-    });
+
+    classId = parseInt(req.body.class) === 0 ? null : req.body.class;
+    isbn = MBG.utilities.validateIsbn(req.body.isbn);
+    tempId = parseInt(req.body.class);
+    tempPub = parseInt(req.body.orig_pub_date);
+
+    // if any of these are true, then bad data was intentionally submitted
+    if (isbn === 0 || req.body.author_id === "" || tempId < 1 || tempId > 4 || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
+        res.type('plain/text');
+        res.status(400);
+        res.send('400 - Bad Request');
+        return;
+    }
+
+    values = [req.body.author_id, req.body.title, classId, req.body.orig_pub_date, isbn];
+
+    if (isbn && (req.query.isbn === req.body.isbn)) { // if bad data, don't update
+        MBG.pool.query(query, values, function (err, result) {
+            if (err) {
+                context.error = "Could not connect to database.  Please try again later.";
+                console.log(err);
+                res.render('thisBook', context);
+            } else {
+                context.added = true;
+                context.message = "This book was successfully updated."
+                MBG.renderThisBook(req, res, context);
+            }
+        });
+    } else {
+        res.type('plain/text');
+        res.status(400);
+        res.send('400 - Bad Request');
+    }
 });
 
 // form to add or edit book
@@ -228,17 +266,20 @@ MBG.app.get('/myBooksAddEdit', function (req, res) {
     MBG.pool.query(queryClass, function (err, resultClass) {
         if (err) {
             context.error = "Could not connect to database.  Please try again later.";
-            throw err;
-        }
-        context.classes = resultClass;
-        MBG.pool.query(queryRating, function (err, resultRating) {
-            if (err) {
-                context.error = "Could not connect to database.  Please try again later.";
-                throw err;
-            }
-            context.ratings = resultRating;
+            console.log(err);
             res.render('myBooksAddEdit', context);
-        });
+        } else {
+            context.classes = resultClass;
+            MBG.pool.query(queryRating, function (err, resultRating) {
+                if (err) {
+                    context.error = "Could not connect to database.  Please try again later.";
+                    console.log(err);
+                } else {
+                    context.ratings = resultRating;
+                }
+                res.render('myBooksAddEdit', context);
+            });
+        }
     });
 });
 
@@ -292,6 +333,8 @@ MBG.app.post('/addEditBook', function (req, res) {
     auth = req.body.author;
     tempId = parseInt(book.class_id);
     tempPub = parseInt(book.orig_pub_date);
+
+    // if any of these are true, then bad data was intentionally submitted
     if (book.isbn === "" || parseInt(book.isbn) === 0 || auth.author_last_name === "" || tempId < 1 || tempId > 4 || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
         res.type('plain/text');
         res.status(400);

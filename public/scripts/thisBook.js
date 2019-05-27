@@ -105,7 +105,7 @@ MBTB.confirmDelete = function () {
     MBTB.deleteBook.addEventListener('click', function (event) {
         if (confirm("Delete this book from the list of books you have read?")) {
             // delete from Book_Reader, return to ???
-            result = "Deleted";
+            result = "Deleted (not really, not working yet)";
         } else {
             // don't delete, stay on page
             result = "Not Deleted";

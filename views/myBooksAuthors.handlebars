@@ -9,10 +9,12 @@
     </ul>
 </nav>
 <div>
-    <p><strong>Authors:</strong> {{length}} currently listed.</p>
     {{#if error}}
         <h3>{{error}}</h3>
     {{else}}
+        {{#if length}}
+            <p><strong>Authors:</strong> {{length}} currently listed.</p>
+        {{/if}}
         {{#if authors}}
             <ul>
                 {{#each authors}}

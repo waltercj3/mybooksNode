@@ -17,8 +17,9 @@ const MBG = {
     info: null,             // implementation specific values
     utilities: null,        // shared functions and values
     fs: null,
-    shuffleArray: null,      // function to change order of slideshow
-    renderThisBook: null
+    shuffleArray: null,     // function to change order of slideshow
+    renderThisAuthor: null, // function to render thisAuthor for both GET and POST
+    renderThisBook: null    // function to render thisBook for both GET and POST
 };
 
 MBG.express = require('express');
@@ -116,11 +117,10 @@ MBG.app.get('/myBooksBooks', function (req, res) {
     });
 });
 
-// selected author and books by same listed
-MBG.app.get('/thisAuthor', function (req, res) {
-    var queryAuthor, queryBooks, context = {};
+MBG.renderThisAuthor = function (req, res, context) {
+    var queryAuthor, queryBooks;
 
-    queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name FROM Author WHERE author_id = (?)";
+    queryAuthor = "SELECT author_id, author_last_name, author_first_name, author_mid_name, DATE_FORMAT(author_date_of_birth, '%Y-%m-%d') AS author_date_of_birth, DATE_FORMAT(author_date_of_birth, '%M %d, %Y') AS author_dob, DATE_FORMAT(author_date_passed, '%Y-%m-%d') AS author_date_passed, DATE_FORMAT(author_date_passed, '%M %d, %Y') AS author_dp FROM Author WHERE author_id = (?)";
     queryBooks = "SELECT isbn, book_title, orig_pub_date FROM Book WHERE author_id = (?) ORDER BY orig_pub_date;";
 
     MBG.pool.query(queryAuthor, [req.query.authorid], function (err, resultAuthor) {
@@ -147,6 +147,49 @@ MBG.app.get('/thisAuthor', function (req, res) {
             });
         }
     });
+};
+
+// selected author and books by same listed
+MBG.app.get('/thisAuthor', function (req, res) {
+    var context = {};
+    MBG.renderThisAuthor(req, res, context);
+});
+
+// edit this author and rerender thisAuthor page
+MBG.app.post('/thisAuthor', function (req, res) {
+    var dateBorn, datePassed, classId, values = [], isbn, tempId, tempPub, context = {},
+            query = "UPDATE Author SET author_last_name = (?), author_first_name = (?), author_mid_name = (?), author_date_of_birth = (?), author_date_passed = (?) WHERE author_id = (?)";
+
+    dateBorn = req.body.dateBorn === '' ? null : req.body.dateBorn;
+    datePassed = req.body.datePassed === '' ? null : req.body.datePassed;
+
+    // if any of these are true, then bad data was intentionally submitted
+    if (req.body.lName === "" || req.body.fName === "" || !(dateBorn === null || MBG.utilities.validDateFormat(dateBorn)) || !(datePassed === null || MBG.utilities.validDateFormat(datePassed))) {
+        res.type('plain/text');
+        res.status(400);
+        res.send('400 - Bad Request');
+        return;
+    }
+
+    values = [req.body.lName, req.body.fName, req.body.mName, dateBorn, datePassed, req.body.author_id];
+
+    if (req.query.authorid === req.body.author_id) { // if bad data, don't update
+        MBG.pool.query(query, values, function (err, result) {
+            if (err) {
+                context.error = "Could not connect to database.  Please try again later.";
+                console.log(err);
+                res.render('thisAuthor', context);
+            } else {
+                context.added = true;
+                context.message = "This author's information was successfully updated.";
+                MBG.renderThisAuthor(req, res, context);
+            }
+        });
+    } else {
+        res.type('plain/text');
+        res.status(400);
+        res.send('400 - Bad Request');
+    }
 });
 
 // used by thisBook for both GET and POST
@@ -228,7 +271,7 @@ MBG.app.post('/thisBook', function (req, res) {
     tempPub = parseInt(req.body.orig_pub_date);
 
     // if any of these are true, then bad data was intentionally submitted
-    if (isbn === 0 || req.body.author_id === "" || tempId < 1 || tempId > 4 || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
+    if (isbn === 0 || req.body.author_id === "" || !(classId === null || (tempId >= 1 && tempId <= 4)) || isNaN(tempPub) || tempPub < 1000 || tempPub > 3000) {
         res.type('plain/text');
         res.status(400);
         res.send('400 - Bad Request');

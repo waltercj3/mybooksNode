@@ -104,9 +104,8 @@ nav li a:hover {
     text-align: center;
 }
 
-#criteria {
+#editAuthor {
     float: right;
-    width: 119px;
 }
 
 form.tbl {

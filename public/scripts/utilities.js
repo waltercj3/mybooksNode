@@ -16,5 +16,13 @@ module.exports = {
         } else {
             return isbn;
         }
+    },
+
+    validDateFormat: function (date) {
+        var result = true, regEx = /^\d{4}-\d{2}-\d{2}$/;
+        if(!date.match(regEx)) {
+            result = false;
+        }
+        return result;
     }
 };

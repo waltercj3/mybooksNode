@@ -13,14 +13,26 @@
             <h3>{{error}}</h3>
         {{else}}
             {{#if author}}
-                <p>
+                <input type="button" value="Edit This Author" id="editAuthor">
+                <p data-isbn="{{author.author_id}}" id="thisAuthor">
                     <strong>{{author.author_first_name}} {{author.author_mid_name}} {{author.author_last_name}}: </strong>
                     {{length}} book{{s}} currently listed.
                 </p>
+                {{#if author.author_dob}}
+                    <p>
+                        Date of birth: {{author.author_dob}}
+                    </p>
+                {{/if}}
+                {{#if author.author_dp}}
+                    <p>
+                        Date passed: {{author.author_dp}}
+                    </p>
+                {{/if}}
             {{else}}
                 <h3>something, somewhere, has gone just a little bit wrong</h3>
             {{/if}}
             {{#if books}}
+                <p>Books:</p>
                 <ul>
                     {{#each books}}
                         <li>
@@ -33,3 +45,45 @@
             {{/if}}
         {{/if}}
     </div>
+    <div>
+        {{#if added}}
+            <p id="demo">{{message}}</p>
+        {{else}}
+            <p id="demo"></p>
+        {{/if}}
+    </div>
+    <div id="authorModal" class="modal">
+        <div class="modalContent">
+            <span class="close"><strong>&times</strong></span>
+            <form id="editAuthorForm" class="tbl" action="thisAuthor?authorid={{author.author_id}}" method="post">
+                <input type="submit" disabled style="display: none" aria-hidden="true" />
+                <p class="tbl">
+                    <label class="tbl" for="isbnInput">Last Name:</label>
+                    <input class="tbl" type="text" name="lName" maxlength="30" size="30" id="lNameInput" value="{{author.author_last_name}}" required autofocus>
+                    <input type="hidden" name="author_id" value="{{author.author_id}}">
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="titleInput">First Name:</label>
+                    <input class="tbl" type="text" name="fName" maxlength="30" size="30" id="fNameInput" value="{{author.author_first_name}}" required>
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="authorInput">Middle Name:</label>
+                    <input class="tbl" type="text" name="mName" maxlength="30" size="30" id="mNameInput" value="{{author.author_mid_name}}">
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="pubInput">Date of Birth:</label>
+                    <input class="tbl" type="date" name="dateBorn" min="1000" max="2088" id="DoBInput" value="{{author.author_date_of_birth}}">
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="pubInput">Date Passed:</label>
+                    <input class="tbl" type="date" name="datePassed" min="1000" max="2088" id="DPInput" value="{{author.author_date_passed}}">
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="addEditButton"></label>
+                    <input class="tbl" type="submit" value="Edit This Author" id="editButton">
+                    <input class="tbl" type="button" value="Dismiss" id="dismissButton">
+                </p>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="/scripts/thisAuthor.js"></script>

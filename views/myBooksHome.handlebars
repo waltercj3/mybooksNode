@@ -9,8 +9,16 @@
     </ul>
 </nav>
 
-<div>
-    LOGIN: Username: <input type="email" name="user" id="uNameInput"> Password: <input type="password" name="pass" id="pWordInput">
+<div id="loginDiv">
+    <form class="tbl" id="loginForm">
+        <p class="tbl">
+            <label class="tbl loginLabel" for="uNameInput">Username:</label>
+            <input class="tbl" type="email" name="user" id="uNameInput" placeholder="(email)">
+            <label class="tbl loginLabel" for="pWordInput">Password:</label>
+            <input class="tbl" type="password" name="pass" id="pWordInput">
+            <input class="tbl" type="submit" name="uPSubmit" value="login">
+        </p>
+    </form>
 </div>
 
 <p id="homeP">List the books you've read.<br />When you're at a bookseller, check here to make sure you haven't read it already.</p>

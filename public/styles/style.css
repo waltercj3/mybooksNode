@@ -58,6 +58,10 @@ nav li a, nav li a:visited {
     transition: .3s color;
 }
 
+nav li label {
+    display: inline-block;
+}
+
 nav li:hover {
     background-color: #71badb;
     transition: .3s background-color;
@@ -106,6 +110,16 @@ nav li a:hover {
 
 #editAuthor {
     float: right;
+}
+
+#loginDiv {
+    background-color: #0098dc;
+}
+
+.tbl.loginLabel {
+    padding-left: 14px;
+    padding-right: 0px;
+    color: white;
 }
 
 form.tbl {

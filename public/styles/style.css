@@ -101,11 +101,16 @@ nav li a:hover {
 
 .isbncheck {
     padding: 0px 14px 0px 0px;
-
 }
 
 #homeP {
     text-align: center;
+}
+
+#reader {
+    float: right;
+    font-weight: bold;
+    font-family: sans-serif;
 }
 
 #editAuthor {

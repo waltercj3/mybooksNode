@@ -13,13 +13,15 @@ const MBG = {
     bodyParser: null,
     path: null,
     mysql: null,
-    pool: null,             // database connection pool
-    info: null,             // implementation specific values
-    utilities: null,        // shared functions and values
+    pool: null,                 // database connection pool
+    info: null,                 // implementation specific values
+    utilities: null,            // shared functions and values
     fs: null,
-    shuffleArray: null,     // function to change order of slideshow
-    renderThisAuthor: null, // function to render thisAuthor for both GET and POST
-    renderThisBook: null    // function to render thisBook for both GET and POST
+    shuffleArray: null,         // function to change order of slideshow
+    renderMyBooksHome: null,    // function to render myBooksHome used for every other page when no reader
+    renderMyBooksAuthors: null, // function to render myBooksAuthors for both GET and POST
+    renderThisAuthor: null,     // function to render thisAuthor for both GET and POST
+    renderThisBook: null        // function to render thisBook for both GET and POST
 };
 
 MBG.express = require('express');
@@ -35,13 +37,11 @@ MBG.app.engine('handlebars', MBG.handlebars.engine);
 MBG.app.set('view engine', 'handlebars');
 
 MBG.path = require('path');
-//MBG.info = require(MBG.path.resolve(__dirname, "./info.js"));
 MBG.info = require("./info.js");
 MBG.utilities = require("./public/scripts/utilities.js");
 
 MBG.app.set('port', MBG.info.port);
 
-//MBG.app.use(MBG.express.static(MBG.path.join(__dirname, '/public')));
 MBG.app.use(MBG.express.static('public'));
 
 MBG.mysql = require('mysql');
@@ -66,38 +66,115 @@ MBG.shuffleArray = function (array) {
     }
 };
 
-// home page
-MBG.app.get('/', function (req, res) {
-    var i, imagesFolder, context = {};
+MBG.renderMyBooksHome = function (req, res, context) {
+    var i, imagesFolder,
+        queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader WHERE reader_id = (?)";
+
     context.items = [];
-    imagesFolder = './public/images/';// images for slideshow
+    imagesFolder = './public/images/'; // images for slideshow
+
     MBG.fs.readdir(imagesFolder, function (err, images) {
         if (err) {
             context.error = "Error: could not find image files";
-            throw err;
-        }
-        MBG.shuffleArray(images);
-        for (i = 0; i < images.length; i += 1) {
-            if (MBG.path.extname(images[i].toLowerCase()) === '.jpg') {
-                context.items.push({"image": images[i]});
+            console.log(err);
+        } else {
+            MBG.shuffleArray(images);
+            for (i = 0; i < images.length; i += 1) {
+                if (MBG.path.extname(images[i].toLowerCase()) === '.jpg') {
+                    context.items.push({"image": images[i]});
+                }
             }
         }
-        res.render('myBooksHome', context);
+        if (context.rdr) {
+            MBG.pool.query(queryReader, [req.query.rdr], function (err, result) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    if (result[0]) {
+                        context.reader = result[0];
+                        context.rdr = result[0].reader_id;
+                    } else {
+                        context.rdr = null;
+                    }
+                    res.render('myBooksHome', context);
+                }
+            });
+        } else {
+            res.render('myBooksHome', context);
+        }
     });
+};
+
+// home page
+MBG.app.get('/', function (req, res) {
+    var context = {};
+    if (req.query.rdr) {
+        context.rdr = req.query.rdr;
+    }
+    MBG.renderMyBooksHome(req, res, context);
 });
+
+MBG.renderMyBooksAuthors = function (req, res, context) {
+    var queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader WHERE reader_id = (?)",
+        queryAuthors = "SELECT author_id, author_last_name, author_first_name, author_mid_name \
+            FROM Author WHERE author_id IN \
+            (SELECT DISTINCT author_id FROM Book WHERE isbn IN \
+            (SELECT isbn FROM Book_Reader WHERE reader_id = (?))) \
+            ORDER BY author_last_name";
+
+    if (context.rdr) {
+        MBG.pool.query(queryReader, [context.rdr], function (err, resultReader) {
+            if (err) {
+                context.error = "Error: Could not connect to database.  Please try again later.";
+                console.log(err);
+                res.render('myBooksAuthors', context);
+            } else {
+                context.reader = resultReader[0];
+                MBG.pool.query(queryAuthors, [context.rdr], function (err, resultAuthors) {
+                    if (err) {
+                        context.error = "Error: Could not connect to database.  Please try again later.";
+                        console.log(err);
+                    } else {
+                        context.authors = resultAuthors;
+                        context.length = resultAuthors.length;
+                    }
+                    res.render('myBooksAuthors', context);
+                });
+            }
+        });
+    } else {
+        MBG.renderMyBooksHome(req, res, context);
+    }
+};
 
 // list of authors
 MBG.app.get('/myBooksAuthors', function (req, res) {
-    var context = {}, query = "SELECT * FROM Author ORDER BY author_last_name";
-    MBG.pool.query(query, function (err, result) {
+    var context = {};
+    if (req.query.rdr) {
+        context.rdr = req.query.rdr;
+    }
+    MBG.renderMyBooksAuthors(req, res, context)
+});
+
+MBG.app.post('/myBooksAuthors', function (req, res) {
+    var context = {},
+        queryLogin = "SELECT reader_id, reader_last_name, reader_first_name FROM reader \
+            WHERE reader_email = (?) AND reader_password = (?)";
+    
+    MBG.pool.query(queryLogin, [req.body.user, req.body.pass], function (err, resultLogin) {
+        console.log(resultLogin[0].reader_id);
         if (err) {
             context.error = "Error: Could not connect to database.  Please try again later.";
             console.log(err);
+            res.render('myBooksAuthors', context);
+        } else if (resultLogin[0].reader_id) {
+            context.rdr = resultLogin[0].reader_id;
+            context.reader = resultLogin[0];
+            MBG.renderMyBooksAuthors(req, res, context);
         } else {
-            context.authors = result;
-            context.length = result.length;    
+            context.noReader = "Reader not found with submitted username and password.  Please try again.";
+            MBG.renderMyBooksHome(req, res, context);
         }
-        res.render('myBooksAuthors', context);
     });
 });
 

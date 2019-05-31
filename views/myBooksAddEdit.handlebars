@@ -1,9 +1,11 @@
-<h1><a href="/">My Books</a></h1>
+{{#if reader}}<p id="reader">{{reader.reader_first_name}} {{reader.reader_last_name}}</p>{{/if}}
+
+<h1><a href="/?rdr={{rdr}}">My Books</a></h1>
 
 <nav>
     <ul>
-        <li><a href="myBooksAuthors" >Authors</a>
-        </li><li><a href="myBooksBooks">Books</a>
+        <li><a href="myBooksAuthors?rdr={{rdr}}" >Authors</a>
+        </li><li><a href="myBooksBooks?rdr={{rdr}}">Books</a>
         </li><li class="current"><a href="#">Add</a>
         </li>
     </ul>
@@ -74,7 +76,7 @@
             </p>
             <p class="tbl">
                 <label class="tbl" for="addEditButton"></label>
-                <input class="tbl" type="submit" value="Add/Edit Book" id="addEditButton">
+                <input class="tbl" type="submit" value="Add Book" id="addEditButton">
             </p>
     </form>
 </div>

@@ -15,6 +15,8 @@
         <p>Enter a 10 or 13 digit ISBN to check if this book is already in our database.</p>
     </div>
     <form id="bookForm" class="tbl">
+                <input type="submit" disabled style="display: none" aria-hidden="true" />
+                <input type="hidden" name="rdr" value="{{rdr}}" />
             <p class="tbl">
                 <label class="tbl" for="isbnInput">ISBN:</label>
                 <input class="tbl" type="text" name="isbn" maxlength="19" size="19" required autofocus id="isbnInput">
@@ -80,4 +82,4 @@
             </p>
     </form>
 </div>
-<script type="text/javascript" src="scripts/addEdit.js"></script>
+<script type="text/javascript" src="/scripts/addEdit.js"></script>

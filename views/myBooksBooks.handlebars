@@ -1,13 +1,12 @@
 {{#if reader}}<p id="reader">{{reader.reader_first_name}} {{reader.reader_last_name}}</p>{{/if}}
 
-
 <h1><a href="/?rdr={{rdr}}">My Books</a></h1>
 
 <nav>
     <ul>
         <li ><a href="myBooksAuthors?rdr={{rdr}}" >Authors</a>
         </li><li class="current"><a href="#">Books</a>
-        </li><li><a href="myBooksAddEdit?={{rdr}}">Add</a>
+        </li><li><a href="myBooksAddEdit?rdr={{rdr}}">Add</a>
         </li>
     </ul>
 </nav>
@@ -21,8 +20,8 @@
                 {{#each books}}
                     <li>
                         <p class='book'>
-                            <a href="thisBook?rdr={{rdr}}&isbn={{this.isbn}}">{{this.book_title}}</a> 
-                            by <a href="thisAuthor?rdr={{rdr}}&authorid={{this.author_id}}">{{this.author_first_name}} {{this.author_mid_name}} {{this.author_last_name}}</a>
+                            <a href="thisBook?rdr={{../rdr}}&isbn={{this.isbn}}">{{this.book_title}}</a> 
+                            by <a href="thisAuthor?rdr={{../rdr}}&authorid={{this.author_id}}">{{this.author_first_name}} {{this.author_mid_name}} {{this.author_last_name}}</a>
                         </p>
                     </li>
                 {{/each}}

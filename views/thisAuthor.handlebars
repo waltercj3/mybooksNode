@@ -18,7 +18,7 @@
                 <input type="button" value="Edit This Author" id="editAuthor">
                 <p data-isbn="{{author.author_id}}" id="thisAuthor">
                     <strong>{{author.author_first_name}} {{author.author_mid_name}} {{author.author_last_name}}: </strong>
-                    {{length}} book{{s}} currently listed.
+                    {{length}} book{{s}} on your list.
                 </p>
                 {{#if author.author_dob}}
                     <p>
@@ -39,7 +39,7 @@
                     {{#each books}}
                         <li>
                             <p class='book'>
-                                <a href="thisBook?isbn={{this.isbn}}">{{this.book_title}}</a>
+                                <a href="thisBook?rdr={{../rdr}}&isbn={{this.isbn}}">{{this.book_title}}</a>
                             </p>
                         </li>
                     {{/each}}
@@ -83,7 +83,7 @@
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="addEditButton"></label>
-                    <input class="tbl" type="submit" value="Edit This Author" id="editButton">
+                    <input class="tbl" type="submit" value="Save" id="editButton">
                     <input class="tbl" type="button" value="Dismiss" id="dismissButton">
                 </p>
             </form>

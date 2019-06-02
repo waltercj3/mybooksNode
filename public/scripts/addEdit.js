@@ -6,6 +6,7 @@ const MBAG = {
     doc: document,
     bookMessage: document.getElementById("bookMessage"),
     bookForm: document.getElementById("bookForm"),
+    rdr: document.getElementById("rdr"),
     isbnInput: document.getElementById("isbnInput"),
     fetchButton: document.getElementById("fetchButton"),
     titleInput: document.getElementById("titleInput"),
@@ -24,7 +25,6 @@ const MBAG = {
 };
 
 MBAG.emptyFields = function () {
-    //MBAG.isbnInput.value = "";
     MBAG.titleInput.value = "";
     MBAG.lastNameInput.value = "";
     MBAG.firstNameInput.value = "";
@@ -48,7 +48,7 @@ MBAG.validateIsbn = function (isbn) {
     } else {
         return isbn;
     }
-}
+};
 
 MBAG.bindFetchGet = function () {
     MBAG.fetchButton.addEventListener('click', function (event) {
@@ -100,6 +100,7 @@ MBAG.bindAddEditPost = function () {
 
         MBAG.formData.book = {}; // sub object for book data
         MBAG.formData.author = {}; // sub object for author data
+        MBAG.formData.rdr = MBAG.rdr;
 
         isbn = MBAG.validateIsbn(MBAG.isbnInput.value);
         if (isbn) {

@@ -163,7 +163,7 @@ MBG.app.get('/myBooksAuthors', function (req, res) {
 // list of authors, POST from login attempt, failed login returns user to home page
 MBG.app.post('/myBooksAuthors', function (req, res) {
     var context = {},
-        queryLogin = "SELECT reader_id, reader_last_name, reader_first_name FROM reader \
+        queryLogin = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
             WHERE reader_email = (?) AND reader_password = (?)";
     
     MBG.pool.query(queryLogin, [req.body.user, req.body.pass], function (err, resultLogin) {

@@ -526,7 +526,7 @@ MBG.app.post('/deleteBR', function (req, res) {
                 res.type('plain/text');
                 res.status(500);
                 res.send('500 - Server Error');
-                throw err;
+                return;
             } else if (resultDelBR.affectedRows === 1) {
                 response.success = true;
             } else {
@@ -611,7 +611,7 @@ MBG.app.get('/isbnResults', function (req, res) {
                 res.type('plain/text');
                 res.status(500);
                 res.send('500 - Server Error');
-                throw err;
+                return;
             } else if (resultReader[0]) {
                 isbn = MBG.utilities.validateIsbn(req.query.isbn);
                 if (isbn) {
@@ -621,7 +621,7 @@ MBG.app.get('/isbnResults', function (req, res) {
                             res.type('plain/text');
                             res.status(500);
                             res.send('500 - Server Error');
-                            throw err;
+                            return;
                         } else {
                             if (resultBookReader[0]) {
                                 response.read = true;
@@ -633,7 +633,7 @@ MBG.app.get('/isbnResults', function (req, res) {
                                     res.type('plain/text');
                                     res.status(500);
                                     res.send('500 - Server Error');
-                                    throw err;
+                                    return;
                                 }
                                 if (resultBook[0]) {
                                     response.book = resultBook[0];
@@ -643,7 +643,7 @@ MBG.app.get('/isbnResults', function (req, res) {
                                             res.type('plain/text');
                                             res.status(500);
                                             res.send('500 - Server Error');
-                                            throw err;
+                                            return;
                                         }
                                         response.author = resultAuthor[0];
                                         res.type('application/json');
@@ -694,7 +694,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                 res.type('plain/text');
                 res.status(500);
                 res.send('500 - Server Error');
-                throw err;
+                return;
             } else if (resultReader[0]) {
                 response.rdr = resultReader[0].reader_id;
                 response.reader = resultReader[0];
@@ -716,7 +716,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                         res.type('plain/text');
                         res.status(500);
                         res.send('500 - Server Error');
-                        throw err;
+                        return;
                     } else if (resultBook[0]) {
                         response.book = resultBook[0];
                         MBG.pool.query(queryBookReader, [response.rdr, book.isbn], function (err, resultBookReader) {
@@ -725,7 +725,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                                 res.type('plain/text');
                                 res.status(500);
                                 res.send('500 - Server Error');
-                                throw err;
+                                return;
                             } else if (resultBookReader[0]) {
                                 response.bookReader = resultBookReader[0];
                                 MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
@@ -734,7 +734,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                                         res.type('plain/text');
                                         res.status(500);
                                         res.send('500 - Server Error');
-                                        throw err;
+                                        return;
                                     }
                                     response.author = resultAuthor[0];
                                     response.added = false;
@@ -751,7 +751,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                                         res.type('plain/text');
                                         res.status(500);
                                         res.send('500 - Server Error');
-                                        throw err;
+                                        return;
                                     } else {
                                         response.added = true;
                                         response.message = "The book was successfully added to your list. Thank you.";
@@ -770,7 +770,7 @@ MBG.app.post('/addEditBook', function (req, res) {
                                 res.type('plain/text');
                                 res.status(500);
                                 res.send('500 - Server Error');
-                                throw err;
+                                return;
                             } else {
                                 response.added = true;
                                 response.message = "The book was successfully added to your list. Thank you.";

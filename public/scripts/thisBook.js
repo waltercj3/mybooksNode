@@ -23,6 +23,9 @@ const MBTB = {
     closeModal: null,
     setListeners: null,
     setSelectedClass: null,
+    setSelectedRating: null,
+    getAuthorId: null,
+    validateAuthorId: null,
     confirmDelete: null
 };
 
@@ -91,6 +94,18 @@ MBTB.getAuthorId = function () {
 };
 
 MBTB.doc.addEventListener('DOMContentLoaded', MBTB.getAuthorId);
+
+MBTB.validateAuthorId = function () {
+    MBTB.authorInput.addEventListener('blur', function () {
+        console.log("blurred");
+        if (MBTB.editBookForm.author_id.value === 'undefined') {
+            MBTB.editBookForm.author_id.value = MBTB.thisBookData.author_id;
+            MBTB.editBookForm.author.value = MBTB.thisBookData.author;
+        }
+    });
+};
+
+MBTB.doc.addEventListener('DOMContentLoaded', MBTB.validateAuthorId);
 
 MBTB.setListeners = function () {
     MBTB.editBook.addEventListener('click', function () {

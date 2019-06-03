@@ -59,7 +59,7 @@
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="authorInput">Author:</label>
-                    <input class="tbl" list="authors" name="author" maxlength="60" size="45" id="authorInput" value="{{book.author_last_name}}, {{book.author_first_name}} {{book.author_mid_name}}" required>
+                    <input class="tbl" type="text" list="authors" name="author" maxlength="60" size="45" id="authorInput" value="{{book.author_last_name}}, {{book.author_first_name}} {{book.author_mid_name}}" required>
                     {{#if error}}
                         {{error}}
                     {{else}}

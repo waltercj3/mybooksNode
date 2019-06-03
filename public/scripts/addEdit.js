@@ -52,12 +52,13 @@ MBAG.validateIsbn = function (isbn) {
 
 MBAG.bindFetchGet = function () {
     MBAG.fetchButton.addEventListener('click', function (event) {
-        var request, isbn, reqUrl, response;
+        var request, rdr, isbn, reqUrl, response;
         request = new XMLHttpRequest();
 
+        rdr = MBAG.rdr ? MBAG.rdr.value : null;
         isbn = MBAG.validateIsbn(MBAG.isbnInput.value);
         if (isbn) {
-            reqUrl = "isbnResults?isbn=" + isbn;
+            reqUrl = "isbnResults?rdr=" + rdr + "&isbn=" + isbn;
             request.open('GET', reqUrl, true);
             request.send();
         } else {
@@ -68,23 +69,27 @@ MBAG.bindFetchGet = function () {
         request.addEventListener('load', function () {
             if (request.status >= 200 && request.status <400) {
                 response = JSON.parse(request.responseText);
-                if (response.book === "Book not listed.") {
-                    MBAG.bookMessage.innerHTML = "<p>" + response.book + "</p>";
-                    MBAG.emptyFields();
+                MBAG.emptyFields();
+                if (response.message) {
+                    MBAG.bookMessage.innerHTML = "<p>" + response.message + "</p>";
                 } else { // fill in form fields
-                    MBAG.bookMessage.innerHTML = "<p>Results found.</p>";
-                    MBAG.isbnInput.value = response.book.isbn;
+                    if (response.read) {
+                        MBAG.bookMessage.innerHTML = "<p>This book is already on your list.</p>";
+                        MBAG.ratingInput.value = response.bookReader.book_rate_id;
+                    } else {
+                        MBAG.bookMessage.innerHTML = "<p>This book is in our database, but not on your list.</p>";
+                        MBAG.isbnInput.value = response.book.isbn;
+                    }
                     MBAG.titleInput.value = response.book.book_title;
                     MBAG.lastNameInput.value = response.author.author_last_name;
                     MBAG.firstNameInput.value = response.author.author_first_name;
                     MBAG.midNameInput.value = response.author.author_mid_name;
                     MBAG.classInput.value = response.book.class_id;
-                    MBAG.ratingInput.value = response.book.book_rate_id;
                     MBAG.pubInput.value = response.book.orig_pub_date;
                 }
             } else {
                 console.log("Error in network request: " + request.statusText);
-                MBAG.bookMessage.innerHTML = "<p>Error: " + request.error + "</p>";
+                MBAG.bookMessage.innerHTML = "<p>" + response.error + "</p>";
             }
         });
         event.preventDefault();
@@ -100,7 +105,7 @@ MBAG.bindAddEditPost = function () {
 
         MBAG.formData.book = {}; // sub object for book data
         MBAG.formData.author = {}; // sub object for author data
-        MBAG.formData.rdr = MBAG.rdr;
+        MBAG.formData.rdr = MBAG.rdr ? MBAG.rdr.value : null;
 
         isbn = MBAG.validateIsbn(MBAG.isbnInput.value);
         if (isbn) {
@@ -149,7 +154,7 @@ MBAG.bindAddEditPost = function () {
 
                 if (response.added) {
                     MBAG.bookMessage.innerHTML = "<p>" + response.message + "</p>";
-                    MBAG.emptyFields();    
+                    MBAG.emptyFields();
                 } else {
                     MBAG.bookMessage.innerHTML = "<p>" + response.message + "</p>";
                     MBAG.isbnInput.value = response.book.isbn;
@@ -163,7 +168,7 @@ MBAG.bindAddEditPost = function () {
                 }
             } else {
                 console.log("Error in network request: " + request.statusText);
-                MBAG.bookMessage.innerHTML = "Error in network request: " + request.statusText;
+                MBAG.bookMessage.innerHTML = "<p>" + response.error + "</p>";
             }
         });
         request.send(JSON.stringify(MBAG.formData)); // does the object really need to be stringified?

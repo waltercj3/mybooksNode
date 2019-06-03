@@ -64,6 +64,17 @@ MBTB.setSelectedClass = function () {
 
 MBTB.doc.addEventListener('DOMContentLoaded', MBTB.setSelectedClass);
 
+MBTB.setSelectedRating = function () {
+    var options = MBTB.ratingInput.children,
+        selectedRating = MBTB.ratingInput.dataset.rating_id;
+    if (options[5 - selectedRating]) {
+        options[5 - selectedRating].setAttribute("selected", true);
+        MBTB.thisBookData.rating = selectedRating;
+    }
+};
+
+MBTB.doc.addEventListener('DOMContentLoaded', MBTB.setSelectedRating);
+
 MBTB.getAuthorId = function () {
     MBTB.authorInput.addEventListener('input', function () {
         var authors, lngth, authorId, authorName = MBTB.editBookForm.author.value;

@@ -25,6 +25,9 @@
                 {{#if book.class_name}}
                     <p>Classified as: {{book.class_name}}</p>
                 {{/if}}
+                {{#if book.book_rate_desc}}
+                    <p>Rating: {{book.book_rate_desc}}</p>
+                {{/if}}
                 <p>ISBN: {{book.isbn}}</p>
             {{else}}
                 <h3>something, somewhere, has gone just a little bit wrong</h3>
@@ -93,7 +96,7 @@
                         {{error}}
                     {{else}}
                         {{#if ratings}}
-                            <select class="tbl" name="rating" id="ratingInput">
+                            <select class="tbl" name="rating" id="ratingInput" data-rating_id="{{book.book_rate_id}}">
                                 {{#each ratings}}
                                     <option value="{{this.book_rate_id}}">{{this.book_rate_description}}</option>
                                 {{/each}}

@@ -112,17 +112,37 @@ MBTB.setListeners = function () {
 MBTB.doc.addEventListener('DOMContentLoaded', MBTB.setListeners);
 
 MBTB.confirmDelete = function () {
-    var result = "";
+    var request, response, data = {};
+
     MBTB.deleteBook.addEventListener('click', function (event) {
-        if (confirm("Delete this book from the list of books you have read?")) {
-            // delete from Book_Reader, return to ???
-            result = "Deleted (not really, not working yet)";
-        } else {
-            // don't delete, stay on page
-            result = "Not Deleted";
+        // event.preventDefault();
+
+        if (confirm("Delete this book from your list?")) {
+            if (MBTB.thisBook.dataset.isbn && MBTB.editBookForm.rdr.value) {
+                data.isbn = MBTB.thisBook.dataset.isbn;
+                data.rdr = MBTB.editBookForm.rdr.value;
+                request = new XMLHttpRequest();
+                request.open('POST', 'deleteBR', true);
+                request.setRequestHeader('Content-Type', 'application/json');
+                request.addEventListener('load', function () {
+                    if (request.status >= 200 && request.status < 400) {
+                        response = JSON.parse(request.responseText);
+                        if (response.success) {
+                            window.location.href = '/myBooksBooks?rdr=' + data.rdr;
+                        } else {
+                            console.log("Error in network request: " + response.message);
+                            MBTB.demo.textContent = "An error occurred. The book was not deleted.";
+                        }
+                    } else {
+                        console.log("Error in network request: " + request.statusText);
+                        MBTB.demo.textContent = "An error occurred. The book was not deleted.";
+                    }
+                        });
+                request.send(JSON.stringify(data));
+            } else {
+                MBTB.demo.textContent = "Bad data was submitted. The book was not deleted.";
+            }
         }
-        MBTB.demo.innerText = result;
-        event.preventDefault();
     });
 };
 

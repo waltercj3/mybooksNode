@@ -20,6 +20,7 @@ const MBG = {
     shuffleArray: null,         // function to change order of slideshow
     renderMyBooksHome: null,    // function to render myBooksHome used for every other page when no reader
     renderMyBooksAuthors: null, // function to render myBooksAuthors for both GET and POST
+    renderMyBooksBooks: null,   // function to render myBooksBooks for initial GET and for deleteBR POST
     renderThisAuthor: null,     // function to render thisAuthor for both GET and POST
     renderThisBook: null        // function to render thisBook for both GET and POST
 };
@@ -181,10 +182,8 @@ MBG.app.post('/myBooksAuthors', function (req, res) {
     });
 });
 
-// list of books
-MBG.app.get('/myBooksBooks', function (req, res) {
-    var context = {},
-        queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
+MBG.renderMyBooksBooks = function (req, res, context) {
+    var queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
             WHERE reader_id = (?)",
         queryBooks = "SELECT Book.isbn, Book.book_title, Book.author_id, Author.author_last_name, \
             Author.author_first_name, Author.author_mid_name \
@@ -192,8 +191,7 @@ MBG.app.get('/myBooksBooks', function (req, res) {
             AND Book.isbn IN (SELECT isbn FROM Book_Reader WHERE reader_id = (?)) \
             ORDER BY Book.book_title";
     
-    if (req.query.rdr) {
-        context.rdr = req.query.rdr;
+    if (context.rdr) {
         MBG.pool.query(queryReader, [context.rdr], function (err, resultReader) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
@@ -220,6 +218,13 @@ MBG.app.get('/myBooksBooks', function (req, res) {
     } else {
         MBG.renderMyBooksHome(req, res, context);
     }
+};
+
+// list of books
+MBG.app.get('/myBooksBooks', function (req, res) {
+    var context = {};
+    context.rdr = req.query.rdr;
+    MBG.renderMyBooksBooks(req, res, context);
 });
 
 // used by thisAuthor for both GET and POST
@@ -496,6 +501,7 @@ MBG.app.post('/thisBook', function (req, res) {
                     res.type('plain/text');
                     res.status(400);
                     res.send('400 - Bad Request');
+                    return;
                 }
             } else {
                 context.rdr = null;
@@ -504,6 +510,39 @@ MBG.app.post('/thisBook', function (req, res) {
         });
     } else {
         MBG.renderMyBooksHome(req, res, context);
+    }
+});
+
+// delete an entry from Book_Reader
+MBG.app.post('/deleteBR', function (req, res) {
+    var context = {}, response = {},
+        queryDelBR = "DELETE FROM Book_Reader WHERE reader_id = (?) and isbn = (?)";
+
+    if (req.body.rdr && req.body.isbn) {
+        context.rdr = req.body.rdr;
+        MBG.pool.query(queryDelBR, [req.body.rdr, req.body.isbn], function (err, resultDelBR) {
+            if (err) {
+                response.error = "Could not connect to database.  Please try again later.";
+                res.type('plain/text');
+                res.status(500);
+                res.send('500 - Server Error');
+                throw err;
+            } else if (resultDelBR.affectedRows === 1) {
+                response.success = true;
+            } else {
+                response.success = false;
+                response.message = "No book was deleted with the submitted data."
+            }
+            res.type('application/json');
+            res.status(200);
+            res.send(response);
+        });
+    } else {
+        response.success = false;
+        response.message = "Bad data was submitted. No delete was attempted."
+        res.type('application/json');
+        res.status(200);
+        res.send(response);
     }
 });
 
@@ -649,8 +688,6 @@ MBG.app.post('/addEditBook', function (req, res) {
 
     if (req.body.rdr) {
         response.rdr = req.body.rdr;
-        console.log('queryReader');
-        console.log(response.rdr);
         MBG.pool.query(queryReader, [response.rdr], function (err, resultReader) {
             if (err) {
                 response.error = "Could not connect to database.  Please try again later.";
@@ -673,7 +710,6 @@ MBG.app.post('/addEditBook', function (req, res) {
                     res.send('400 - Bad Request');
                     return;
                 }
-                console.log('queryBook');
                 MBG.pool.query(queryBook, [book.isbn], function (err, resultBook) {
                     if (err) {
                         response.error = "Could not connect to database.  Please try again later.";
@@ -683,7 +719,6 @@ MBG.app.post('/addEditBook', function (req, res) {
                         throw err;
                     } else if (resultBook[0]) {
                         response.book = resultBook[0];
-                        console.log('queryBookReader');
                         MBG.pool.query(queryBookReader, [response.rdr, book.isbn], function (err, resultBookReader) {
                             if (err) {
                                 response.error = "Could not connect to database.  Please try again later.";
@@ -693,7 +728,6 @@ MBG.app.post('/addEditBook', function (req, res) {
                                 throw err;
                             } else if (resultBookReader[0]) {
                                 response.bookReader = resultBookReader[0];
-                                console.log('queryAuthor');
                                 MBG.pool.query(queryAuthor, [resultBook[0].author_id], function (err, resultAuthor) {
                                     if (err) {
                                         response.error = "Could not connect to database.  Please try again later.";
@@ -711,7 +745,6 @@ MBG.app.post('/addEditBook', function (req, res) {
                                 });
                             } else {
                                 values = [response.rdr, book.isbn, book.book_rate_id];
-                                console.log('queryAddBR');
                                 MBG.pool.query(queryAddBR, values, function (err, resultAddBR) {
                                     if (err) {
                                         response.error = "Error: Could not connect to database.  Please try again later.";
@@ -720,7 +753,6 @@ MBG.app.post('/addEditBook', function (req, res) {
                                         res.send('500 - Server Error');
                                         throw err;
                                     } else {
-                                        console.log(resultAddBR);
                                         response.added = true;
                                         response.message = "The book was successfully added to your list. Thank you.";
                                         res.type('application/json');

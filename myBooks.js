@@ -680,7 +680,7 @@ MBG.app.post('/addEditBook', function (req, res) {
             WHERE reader_id = (?)",
         queryBook = 'SELECT * FROM Book WHERE isbn = (?)',
         queryBookReader = "SELECT read_date, book_rate_id FROM Book_Reader \
-        WHERE reader_id = (?) AND isbn = (?)",
+            WHERE reader_id = (?) AND isbn = (?)",
         queryAuthor = "SELECT author_last_name, author_first_name, author_mid_name \
             FROM Author WHERE author_id = (?)",
         queryAddBR = "INSERT INTO Book_Reader (reader_id, isbn, book_rate_id) VALUES (?, ?, ?)",

@@ -97,7 +97,6 @@ MBTB.doc.addEventListener('DOMContentLoaded', MBTB.getAuthorId);
 
 MBTB.validateAuthorId = function () {
     MBTB.authorInput.addEventListener('blur', function () {
-        console.log("blurred");
         if (MBTB.editBookForm.author_id.value === 'undefined') {
             MBTB.editBookForm.author_id.value = MBTB.thisBookData.author_id;
             MBTB.editBookForm.author.value = MBTB.thisBookData.author;

@@ -8,6 +8,24 @@
         </li><li class="current"><a href="#">Books</a>
         </li><li><a href="myBooksAddEdit?rdr={{rdr}}">Add</a>
         </li>
+        <li class="current" id="filterItem">
+            {{#if classes}}
+                <form id="classFilterForm" action="myBooksBooks" method="post">
+                    <select class="tbl" name="class" id="classFilter">
+                        {{#each classes}}
+                            <option value="{{this.class_id}}" title="{{this.class_description}}"
+                            {{#if this.slctd}}
+                                {{this.slctd}}
+                            {{/if}}
+                            >{{this.class_name}}</option>
+                        {{/each}}
+                    </select>
+                    <input type="hidden" name="rdr" value="{{rdr}}" />
+                </form>
+            {{else}}
+                something, somewhere, has gone just a little bit wrong
+            {{/if}}
+        </li>
     </ul>
 </nav>
 <div>
@@ -15,7 +33,11 @@
         <h3>{{error}}</h3>
     {{else}}
         {{#if books}}
-            <p><strong>Books:</strong> {{length}} currently listed.</p>
+            <p><strong>Books:</strong> {{length}} currently listed. 
+                {{#if message}}
+                    <span>{{message}}</span>
+                {{/if}}
+            </p>
             <ul>
                 {{#each books}}
                     <li>
@@ -27,7 +49,8 @@
                 {{/each}}
             </ul>
         {{else}}
-            <h3>something, somewhere, has gone just a little bit wrong</h3>
+            <h3>No books listed.</h3>
         {{/if}}
     {{/if}}
 </div>
+<script type="text/javascript" src="/scripts/myBooksBooks.js"></script>

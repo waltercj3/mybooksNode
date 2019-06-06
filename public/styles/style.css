@@ -121,6 +121,19 @@ nav li a:hover {
     background-color: #0098dc;
 }
 
+#classFilter {
+    border-style: none;
+    margin: 0px;
+    height: 16px;
+    font-size: 0.75em;
+}
+
+#filterItem {
+    float: right;
+    width: 120px;
+    margin-right: 10px;
+}
+
 .tbl.loginLabel {
     padding-left: 14px;
     padding-right: 0px;

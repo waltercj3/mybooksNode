@@ -151,7 +151,7 @@ MBTB.confirmDelete = function () {
                         console.log("Error in network request: " + request.statusText);
                         MBTB.demo.textContent = "An error occurred. The book was not deleted.";
                     }
-                        });
+                });
                 request.send(JSON.stringify(data));
             } else {
                 MBTB.demo.textContent = "Bad data was submitted. The book was not deleted.";

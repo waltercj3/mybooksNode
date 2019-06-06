@@ -183,15 +183,27 @@ MBG.app.post('/myBooksAuthors', function (req, res) {
 });
 
 MBG.renderMyBooksBooks = function (req, res, context) {
-    var queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
+    var cid, classZero = {class_id: 0, class_name: 'All Classifications', class_description: null},
+        queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
             WHERE reader_id = (?)",
         queryBooks = "SELECT Book.isbn, Book.book_title, Book.author_id, Author.author_last_name, \
             Author.author_first_name, Author.author_mid_name \
             FROM Book, Author WHERE Book.author_id = Author.author_id \
+            AND (Book.class_id = (?) OR (?) = 0) \
             AND Book.isbn IN (SELECT isbn FROM Book_Reader WHERE reader_id = (?)) \
-            ORDER BY Book.book_title";
-    
+            ORDER BY Book.book_title",
+        queryClasses = "SELECT class_id, class_name, class_description FROM Classification";
+   
     if (context.rdr) {
+        if (context.classId) {
+            cid = parseInt(context.classId);
+            if (!(cid >= 0 && cid <= 4)) {
+                context.message = "Error, unable to filter book list.";
+                cid = 0;
+            }
+        } else {
+            cid = 0;
+        }
         MBG.pool.query(queryReader, [context.rdr], function (err, resultReader) {
             if (err) {
                 context.error = "Error: Could not connect to database.  Please try again later.";
@@ -200,15 +212,33 @@ MBG.renderMyBooksBooks = function (req, res, context) {
             } else if (resultReader[0]) {
                 context.rdr = resultReader[0].reader_id;
                 context.reader = resultReader[0];
-                MBG.pool.query(queryBooks, [context.rdr], function (err, resultBooks) {
+                MBG.pool.query(queryBooks, [cid, cid, context.rdr], function (err, resultBooks) {
                     if (err) {
                         context.error = "Error: Could not connect to database.  Please try again later.";
                         console.log(err);
+                        res.render('myBooksBooks', context);
                     } else {
                         context.books = resultBooks;
                         context.length = resultBooks.length;
+                        MBG.pool.query(queryClasses, function (err, resultClasses) {
+                            if (err) {
+                                context.error = "Error: Could not connect to database.  Please try again later.";
+                                console.log(err);
+                                } else {
+                                    context.classes = resultClasses;
+                                    context.classes.push(classZero);
+                                    let lngth = context.classes.length;
+                                    for(let i = 0; i < lngth; i += 1) {
+                                        if (cid === context.classes[i].class_id) {
+                                            context.classes[i].slctd = "selected";
+                                        } else {
+                                            context.classes[i].slctd = null;
+                                        }
+                                    }
+                                }
+                                res.render('myBooksBooks', context);
+                            });
                     }
-                    res.render('myBooksBooks', context);
                 });
             } else {
                 context.rdr = null;
@@ -220,10 +250,25 @@ MBG.renderMyBooksBooks = function (req, res, context) {
     }
 };
 
-// list of books
+// list of books GET
 MBG.app.get('/myBooksBooks', function (req, res) {
     var context = {};
+    if (req.query.rdr) {
+        context.rdr = req.query.rdr;
+    }
     context.rdr = req.query.rdr;
+    MBG.renderMyBooksBooks(req, res, context);
+});
+
+// list of books POST
+MBG.app.post('/myBooksBooks', function (req, res) {
+    var context = {};
+    if (req.body.rdr) {
+        context.rdr = req.body.rdr;
+    }
+    if (req.body.class) {
+        context.classId = req.body.class;
+    }
     MBG.renderMyBooksBooks(req, res, context);
 });
 

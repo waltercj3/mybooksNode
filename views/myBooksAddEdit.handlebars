@@ -46,7 +46,7 @@
                         {{#if classes}}
                             <select class="tbl" name="class" id="classInput">
                                 {{#each classes}}
-                                    <option value="{{this.class_id}}">{{this.class_name}}</option>
+                                    <option value="{{this.class_id}}" title="{{this.class_description}}">{{this.class_name}}</option>
                                 {{/each}}
                                 <option value="0" selected></option>
                             </select>

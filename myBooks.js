@@ -361,7 +361,7 @@ MBG.renderThisBook = function (req, res, context) {
         FROM Book, Author, Book_Reader \
         WHERE Book.isbn = (?) AND Book.author_id = Author.author_id \
         AND Book_Reader.reader_id = (?) AND Book_Reader.isbn = (?)";
-    queryClasses = "SELECT class_id, class_name FROM Classification";
+    queryClasses = "SELECT class_id, class_name, class_description FROM Classification";
     queryRatings = "SELECT book_rate_id, book_rate_description FROM Book_Rating \
         ORDER BY book_rate_id DESC";
     queryAuthors = "SELECT author_id, author_last_name, author_first_name, author_mid_name \
@@ -551,7 +551,7 @@ MBG.app.get('/myBooksAddEdit', function (req, res) {
     var context = {},
         queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
             WHERE reader_id = (?)",
-        queryClass = "SELECT class_id, class_name FROM Classification",
+        queryClass = "SELECT class_id, class_name, class_description FROM Classification",
         queryRating = "SELECT * FROM Book_Rating ORDER BY book_rate_id DESC";
 
     if (req.query.rdr) {

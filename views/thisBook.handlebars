@@ -17,7 +17,7 @@
             {{#if book}}
                 <h3 data-isbn="{{book.isbn}}" id="thisBook">{{book.book_title}}</h3>
                 <p class='author'>By
-                    <a href="thisAuthor?authorid={{book.author_id}}">{{book.author_first_name}} {{book.author_mid_name}} {{book.author_last_name}}</a>
+                    <a href="thisAuthor?rdr={{rdr}}&authorid={{book.author_id}}">{{book.author_first_name}} {{book.author_mid_name}} {{book.author_last_name}}</a>
                 </p>
                 {{#if book.orig_pub_date}}
                     <p>Published in {{book.orig_pub_date}}</p>

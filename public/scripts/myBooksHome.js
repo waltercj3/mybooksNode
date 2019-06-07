@@ -6,8 +6,12 @@
 
 const MBHG = {
     doc: document,
+    createUser: document.getElementById("createUser"),
     uNameInput: document.getElementById("uNameInput"),
     pWordInput: document.getElementById("pWordInput"),
+    userModal: document.getElementById("userModal"),
+    createUserForm: document.getElementById("createUserForm"),
+    
     style: {},          // style object for CSS specific to home page
     makeStyle: null,    // function to make style object into stylesheet, add to page
     sheet: null         // stylesheet to which rules are added

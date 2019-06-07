@@ -1,4 +1,8 @@
-{{#if reader}}<p id="reader">{{reader.reader_first_name}} {{reader.reader_last_name}}</p>{{/if}}
+{{#if reader}}
+    <p id="reader" class="rightHome">{{reader.reader_first_name}} {{reader.reader_last_name}}</p>
+{{else}}
+    <input type="button" value="Sign Up" id="createUser" class="rightHome">
+{{/if}}
 
 <h1>My Books</h1>
 
@@ -41,4 +45,34 @@
         {{/if}}
     {{/if}}
 </div>
+    <div id="userModal" class="modal">
+        <div class="modalContent">
+            <span class="close"><strong>&times</strong></span>
+            <form id="createUserForm" class="tbl" action="createUser" method="post">
+                <input type="submit" disabled style="display: none" aria-hidden="true" />
+                <input type="hidden" name="rdr" value="{{rdr}}" />
+                <p class="tbl">
+                    <label class="tbl" for="userLName">Last Name:</label>
+                    <input class="tbl" type="text" name="uLName" maxlength="49" size="28" id="userLName" value="" required autofocus>
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="userFName">First Name:</label>
+                    <input class="tbl" type="text" name="uFName" maxlength="49" size="28" id="userFName" value="">
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="userEMail">EMail:</label>
+                    <input class="tbl" type="email" name="uEMail" maxlength="49" size="28" id="userEMail" value="" required>
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="userPWord">Password:</label>
+                    <input class="tbl" type="password" name="uPWord" maxlength="49" size="28" id="uPWord" value="" required>
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="createUserButton"></label>
+                    <input class="tbl" type="submit" value="Sign Up" id="createUserButton">
+                    <input class="tbl" type="button" value="Dismiss" id="dismissButton">
+                </p>
+            </form>
+        </div>
+    </div>
 <script type="text/javascript" src="/scripts/myBooksHome.js"></script>

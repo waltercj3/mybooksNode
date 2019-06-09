@@ -10,11 +10,22 @@ const MBHG = {
     uNameInput: document.getElementById("uNameInput"),
     pWordInput: document.getElementById("pWordInput"),
     userModal: document.getElementById("userModal"),
+    ex: document.getElementsByClassName("close")[0],
     createUserForm: document.getElementById("createUserForm"),
-    
+    createUserButton: document.getElementById("createUserButton"),
+    dismissButton: document.getElementById("dismissButton"),
+    userPWord: document.getElementById("userPWord"),
+    userCPWord: document.getElementById("userCPWord"),
+    pWMessage: document.getElementById("pWMessage"),
     style: {},          // style object for CSS specific to home page
     makeStyle: null,    // function to make style object into stylesheet, add to page
-    sheet: null         // stylesheet to which rules are added
+    sheet: null,        // stylesheet to which rules are added
+    emptyFields: null,  // function to empty the input fields in the Create User form
+    openModal: null,
+    closeModal: null,
+    setListeners: null, // sets listeners for various entities
+    checkPW: null,      // function to check match of two password fields
+    submitUser: null    // function to submit createUserForm with XMLHttpRequest instead of default
 };
 
 MBHG.style = {
@@ -73,5 +84,63 @@ MBHG.doc.addEventListener('DOMContentLoaded', function () {
     arrLength = imageArray.length;
     for(i = 0; i < arrLength; i += 1) {
         imageArray[i].addEventListener('animationend', removeDone);
+    }
+});
+
+MBHG.emptyFields = function () {
+    MBHG.createUserForm.userLName.value = "";
+    MBHG.createUserForm.userFName.value = "";
+    MBHG.createUserForm.userEMail.value = "";
+    MBHG.createUserForm.userPWord.value = "";
+    MBHG.createUserForm.userCPWord.value = "";
+    MBHG.pWMessage.innerHTML = "";
+};
+
+MBHG.openModal = function () {
+    MBHG.userModal.style.display = "block";
+};
+
+MBHG.closeModal = function () {
+    MBHG.userModal.style.display = "none";
+    MBHG.emptyFields();
+};
+
+MBHG.setListeners = function () {
+    MBHG.createUser.addEventListener('click', function () {
+        MBHG.openModal();
+    });
+    MBHG.ex.addEventListener('click', function () {
+        MBHG.closeModal();
+    });
+    MBHG.dismissButton.addEventListener('click', function () {
+        MBHG.closeModal();
+    });
+    window.addEventListener('click', function (event) {
+        if (event.target === MBHG.userModal) {
+            MBHG.closeModal();
+        }
+    });
+};
+
+//MBHG.doc.addEventListener('DOMContentLoaded', MBHG.setListeners);
+
+MBHG.checkPW = function () {
+    MBHG.userCPWord.addEventListener('keyup', function () {
+        if (MBHG.userCPWord.value === MBHG.userPWord.value) {
+            MBHG.pWMessage.style.color = 'green';
+            MBHG.pWMessage.innerHTML = 'matching';
+        } else {
+            MBHG.pWMessage.style.color = 'red';
+            MBHG.pWMessage.innerHTML = 'not matching';
+        }
+    });
+};
+
+//MBHG.doc.addEventListener('DOMContentLoaded', MBHG.checkPW);
+
+MBHG.doc.addEventListener('DOMContentLoaded', function () {
+    if (MBHG.createUser) {
+        MBHG.setListeners();
+        MBHG.checkPW();
     }
 });

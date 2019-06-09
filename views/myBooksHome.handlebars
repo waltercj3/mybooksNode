@@ -20,9 +20,9 @@
     <form class="tbl" id="loginForm" action="myBooksAuthors" method="post">
         <p class="tbl">
             <label class="tbl loginLabel" for="uNameInput">Username:</label>
-            <input class="tbl" type="email" name="user" id="uNameInput" placeholder="(email)">
+            <input class="tbl" type="email" name="user" id="uNameInput" placeholder="(email)" autocomplete="username">
             <label class="tbl loginLabel" for="pWordInput">Password:</label>
-            <input class="tbl" type="password" name="pass" id="pWordInput">
+            <input class="tbl" type="password" name="pass" id="pWordInput" autocomplete="current-password">
             <input class="tbl" type="submit" name="uPSubmit" value="login">
         </p>
     </form>
@@ -45,10 +45,11 @@
         {{/if}}
     {{/if}}
 </div>
+    {{#unless rdr}}
     <div id="userModal" class="modal">
         <div class="modalContent">
             <span class="close"><strong>&times</strong></span>
-            <form id="createUserForm" class="tbl" action="createUser" method="post">
+            <form id="createUserForm" class="tbl" action="/" method="post">
                 <input type="submit" disabled style="display: none" aria-hidden="true" />
                 <input type="hidden" name="rdr" value="{{rdr}}" />
                 <p class="tbl">
@@ -61,11 +62,16 @@
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="userEMail">EMail:</label>
-                    <input class="tbl" type="email" name="uEMail" maxlength="49" size="28" id="userEMail" value="" required>
+                    <input class="tbl" type="email" name="uEMail" maxlength="49" size="28" id="userEMail" value="" autocomplete="username" required>
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="userPWord">Password:</label>
-                    <input class="tbl" type="password" name="uPWord" maxlength="49" size="28" id="uPWord" value="" required>
+                    <input class="tbl" type="password" name="uPWord" maxlength="49" size="28" id="userPWord" value="" autocomplete="new-password" required>
+                </p>
+                <p class="tbl">
+                    <label class="tbl" for="userPWord">Confirm Password:</label>
+                    <input class="tbl" type="password" name="uCPWord" maxlength="49" size="28" id="userCPWord" value="" autocomplete="new-password" required>
+                    <span id="pWMessage"></span>
                 </p>
                 <p class="tbl">
                     <label class="tbl" for="createUserButton"></label>
@@ -75,4 +81,5 @@
             </form>
         </div>
     </div>
+    {{/unless}}
 <script type="text/javascript" src="/scripts/myBooksHome.js"></script>

@@ -88,7 +88,7 @@ MBG.renderMyBooksHome = function (req, res, context) {
             }
         }
         if (context.rdr) {
-            MBG.pool.query(queryReader, [req.query.rdr], function (err, result) {
+            MBG.pool.query(queryReader, [context.rdr], function (err, result) {
                 if (err) {
                     console.log(err);
                 } else {
@@ -115,6 +115,34 @@ MBG.app.get('/', function (req, res) {
     }
     MBG.renderMyBooksHome(req, res, context);
 });
+
+MBG.app.post('/', function (req, res) {
+    var valid = false, context = {},
+        queryUser = "INSERT INTO Reader (reader_last_name, reader_first_name, reader_email, reader_password) VALUES (?, ?, ?, ?)";
+    if (req.body) {
+        valid = (req.body.uPWord === req.body.uCPWord && req.body.uLName !== "" && req.body.uEMail !== "" && req.body.uPWord !== "");
+        if (valid) {
+            MBG.pool.query(queryUser, [req.body.uLName, req.body.uFName, req.body.uEMail, req.body.uPWord], function (err, resultUser) {
+                if (err) {
+                    context.error = "Error: Could not connect to database.  Please try again later.";
+                    console.log(err);
+                    res.render('myBooksHome', context);
+                } else {
+                    if (resultUser) {
+                        context.rdr = resultUser.insertId;
+                    }
+                    MBG.renderMyBooksHome(req, res, context);
+                }
+            });
+        } else {
+            context.error = "Error: bad data submitted.";
+            MBG.renderMyBooksHome(req, res, context);
+        }
+    } else {
+        context.error = "Error: No data submitted.";
+        MBG.renderMyBooksHome(req, res, context);
+    }
+;})
 
 // used by both GET and POST requests
 MBG.renderMyBooksAuthors = function (req, res, context) {
@@ -453,7 +481,6 @@ MBG.renderThisBook = function (req, res, context) {
                                         } else {
                                             context.authors = resultAuthors;
                                         }
-                                        console.log(context);
                                         res.render('thisBook', context);
                                     });
                                 }

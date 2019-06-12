@@ -631,7 +631,7 @@ MBG.app.get('/myBooksAddEdit', function (req, res) {
         queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \
             WHERE reader_id = (?)",
         queryClass = "SELECT class_id, class_name, class_description FROM Classification",
-        queryRating = "SELECT * FROM Book_Rating ORDER BY book_rate_id DESC";
+        queryRating = "SELECT book_rate_id, book_rate_description FROM Book_Rating ORDER BY book_rate_id DESC";
 
     if (req.query.rdr) {
         context.rdr = req.query.rdr;
@@ -752,7 +752,7 @@ MBG.app.get('/isbnResults', function (req, res) {
     }
 });
 
-// result of add/edit button on myBooksAddEdit page
+// result of Add button on myBooksAddEdit page
 MBG.app.post('/addEditBook', function (req, res) {
     var book, auth, tempId, tempPub, values = [], response = {}, context = {},
         queryReader = "SELECT reader_id, reader_last_name, reader_first_name FROM Reader \

@@ -1,4 +1,4 @@
-use mybooks2;
+use mybooks;
 
 DROP PROCEDURE IF EXISTS AddBook;
 

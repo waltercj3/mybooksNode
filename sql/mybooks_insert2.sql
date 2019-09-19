@@ -1,4 +1,4 @@
-use mybooks2;
+use mybooks;
 
 INSERT INTO Classification (class_name, class_description) VALUES
     ('Science Fiction', 'Fiction in a world/universe that could conceivably be our future; a world of "science" as opposed to "magic."'),

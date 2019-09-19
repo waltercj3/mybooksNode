@@ -17,6 +17,7 @@ const MBG = {
     mysql: null,
     pool: null,                 // database connection pool
     fs: null,
+    setInfo: null,              // function to set deployment specific variables
     shuffleArray: null,         // function to change order of slideshow
     renderMyBooksHome: null,    // function to render myBooksHome used for every other page when no reader
     renderMyBooksAuthors: null, // function to render myBooksAuthors for both GET and POST
@@ -38,18 +39,34 @@ MBG.app.engine('handlebars', MBG.handlebars.engine);
 MBG.app.set('view engine', 'handlebars');
 
 MBG.path = require('path');
-MBG.info = require("./info.js");
-MBG.utilities = require("./public/scripts/utilities.js");
 
-MBG.app.set('port', MBG.info.port);
+MBG.utilities = require("./public/scripts/utilities.js");
 
 MBG.app.use(MBG.express.static('public'));
 
 MBG.mysql = require('mysql');
 
+MBG.setInfo = function () {
+    if (process.env.DEPLOYED && process.env.DEPLOYED === "NC") {
+        var hostPort = [], NCPort = process.env.DB_HOST;
+        hostPort = NCPort.split(":");
+        MBG.info.host = hostPort[0];
+        MBG.info.dbPort = hostPort[1];
+        MBG.info.user = process.env.DB_USER;
+        MBG.info.password = process.env.DB_PASSWORD;
+        MBG.info.database = process.env.DB_NAME;
+        MBG.info.port = process.env.PORT;
+    } else {
+        MBG.info = require("./info.js");
+    }
+} ()
+
+MBG.app.set('port', MBG.info.port);
+
 MBG.pool = MBG.mysql.createPool({
     connectionLimit: 100,
     host: MBG.info.host,
+    port: MBG.info.dbPort,
     user: MBG.info.user,
     password: MBG.info.password,
     database: MBG.info.database

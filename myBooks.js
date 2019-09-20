@@ -12,7 +12,7 @@ const MBG = {
     handlebars: null,
     bodyParser: null,
     path: null,
-    info: null,                 // implementation specific values
+    info: {},                   // implementation specific values
     utilities: null,            // shared functions and values
     mysql: null,
     pool: null,                 // database connection pool
